@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="black_30">#4D000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <!-- 杏仁黄 -->
+    <color name="main_yellow">#FFFAF9DE</color>
+    <!-- 秋叶褐 -->
+    <color name="main_brown">#FFFFF2E2</color>
+    <!-- 胭脂红 -->
+    <color name="main_red">#FFFDE6E0</color>
+    <!-- 青草绿 -->
+    <color name="main_green">#FFE3EDCD</color>
+    <!-- 海天蓝 -->
+    <color name="main_blue">#FFDCE2F1</color>
+    <!-- 葛巾紫 -->
+    <color name="main_purple">#FFE9EBFE</color>
+    <!-- 极光灰 -->
+    <color name="main_grey">#FFEAEAEF</color>
+
+    <color name="light_green_500">#8BC34A</color>
+    <color name="light_green_200">#C5E1A5</color>
+    <color name="light_orange_300">#FFB74D</color>
+    <color name="light_orange_500">#FF9800</color>
+    <color name="light_blue_100">#B3E5FC</color>
+    <color name="light_blue_200">#90CAF9</color>
+    <color name="light_blue_300">#4FC3F7</color>
+    <color name="light_blue_500">#03A9F4</color>
+
+    <color name="blue">#5BC0EB</color>
+    <color name="yellow">#FDE74C</color>
+    <color name="green">#9BC53D</color>
+    <color name="red">#E55934</color>
+    <color name="orange">#FA7921</color>
+
+    <color name="divider_color">#1A000000</color>
+
+    <color name="grey_100">#F5F5F5</color>
+    <color name="grey_200">#EEEEEE</color>
+    <color name="grey_300">#E0E0E0</color>
+</resources>
