@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_large">16dp</dimen>
+    <dimen name="padding_middle">8dp</dimen>
+    <dimen name="padding_small">4dp</dimen>
+
+    <dimen name="radius_page">24dp</dimen>
+    <dimen name="radius_large">12dp</dimen>
+    <dimen name="radius_middle">8dp</dimen>
+    <dimen name="radius_small">4dp</dimen>
+
+    <dimen name="page_padding">16dp</dimen>
+    <dimen name="page_padding_large">32dp</dimen>
+
+    <dimen name="text_size_v0">36sp</dimen>
+    <dimen name="text_size_v1">24sp</dimen>
+    <dimen name="text_size_v2">18sp</dimen>
+    <dimen name="text_size_v3">16sp</dimen>
+    <dimen name="text_size_v4">14sp</dimen>
+
+    <dimen name="divider_height">2dp</dimen>
+
+    <dimen name="icon_size_middle">24dp</dimen>
+    <dimen name="icon_size_small">16dp</dimen>
+
+    <dimen name="divider_size_small">1dp</dimen>
+    <dimen name="divider_size_middle">2dp</dimen>
+    <dimen name="divider_size_large">4dp</dimen>
+</resources>
