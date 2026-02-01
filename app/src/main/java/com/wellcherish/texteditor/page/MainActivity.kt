@@ -1,4 +1,4 @@
-package com.wellcherish.texteditor
+package com.wellcherish.texteditor.page
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

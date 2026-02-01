@@ -13,7 +13,7 @@
         android:theme="@style/Theme.TxtEditor"
         tools:targetApi="31">
         <activity
-            android:name="com.wellcherish.texteditor.MainActivity"
+            android:name="com.wellcherish.texteditor.page.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
