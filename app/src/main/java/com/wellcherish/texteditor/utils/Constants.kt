@@ -22,7 +22,8 @@ enum class FileOpenMode(val modeStr: String) {
 /**
  * 文本内容的保存状态
  */
-enum class SaveState() {
+enum class SaveState {
     NOT_SAVE,
+    SAVING,
     SAVED
 }

@@ -7,11 +7,6 @@ import java.io.FileReader
 
 private const val TAG = "FileEditors"
 
-/**
- * 通常情况下，单页加载 10KB 到 50KB（约 5,000 到 25,000 个汉字） 是一个比较合理的范围。此处采用25000个字符。
- * */
-const val DEFAULT_MAX_CHAR_COUNT = 25000
-
 const val FILE_NAME_PART = "TextEditor"
 
 const val FILE_NAME_SPLIT = "_"

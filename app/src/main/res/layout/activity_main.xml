@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:orientation="vertical" >
 
     <include
         android:id="@+id/mainToolbar"
@@ -17,6 +16,7 @@
         android:id="@+id/tips"
         layout="@layout/editor_tips" />
 
+    <!--在 XML 中设置 android:inputType="textNoSuggestions"关闭拼写检查，可以显著提升大文本输入的流畅度。-->
     <EditText
         android:id="@+id/editText"
         android:layout_width="match_parent"
@@ -27,7 +27,7 @@
         android:textColor="@color/black"
         android:textSize="@dimen/text_size_v2"
         android:gravity="start|top"
-        android:inputType="textMultiLine"
+        android:inputType="textMultiLine|textNoSuggestions"
         android:scrollbars="vertical"
         android:overScrollMode="always"
         android:scrollbarStyle="insideInset"

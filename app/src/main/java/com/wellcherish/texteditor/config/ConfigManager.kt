@@ -13,4 +13,8 @@ object ConfigManager {
     var autoSaveDuration = DefaultConfig.AUTO_SAVE_DURATION
 
     var rootPath: String? = null
+
+    var charset = DefaultConfig.charset
+
+    var texMaxCount = DefaultConfig.DEFAULT_TEXT_MAX_COUNT
 }

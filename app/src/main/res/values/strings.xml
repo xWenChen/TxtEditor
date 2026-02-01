@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">文本编辑器</string>
     <string name="not_save">未保存</string>
+    <string name="saving">保存中…</string>
     <string name="saved">已保存</string>
     <string name="input_text_hint">请输入文本…</string>
     <string name="default_title_name">标题</string>
+    <string name="text_count_to_limit">字数已达到最大，请删除文本后再输入内容。</string>
 </resources>

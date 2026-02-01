@@ -5,11 +5,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.wellcherish.texteditor.config.ConfigManager
-import com.wellcherish.texteditor.config.DefaultConfig
 import com.wellcherish.texteditor.utils.*
 import com.wellcherish.txteditor.R
 import kotlinx.coroutines.*
 import java.io.File
+import java.io.FileWriter
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val autoSaveExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
@@ -29,21 +29,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * */
     var currentOpenTxtFile: File? = null
 
-    fun changeContentSaveState(newState: SaveState) {
+    fun changeContentSaveState(newState: SaveState?) {
         if (contentSaveState.value == newState) {
             return
         }
-        contentSaveState.postValue(newState)
+        viewModelScope.launch(Dispatchers.Main) {
+            contentSaveState.value = newState
+        }
     }
 
     /**
-     * 协程开启轮询任务，进行自动保存。
+     * 协程开启轮询任务，进行周期性的自动保存。
      * */
-    fun startAutoSave(getInputText: (() -> CharSequence?)) {
+    fun startAutoSave(getInputText: (() -> CharSequence?), onFailed: () -> Unit) {
         autoSaveJob = viewModelScope.launch(Dispatchers.IO + autoSaveExceptionHandler) {
             while (isActive) {
                 delay(ConfigManager.autoSaveDuration)
-                saveText(getInputText())
+                withContext(Dispatchers.autoSave) {
+                    saveText(getInputText(), onFailed)
+                }
             }
         }
     }
@@ -51,15 +55,50 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * 保存EditText的文件内容
      * */
-    private suspend fun saveText(newText: CharSequence?) {
-        withContext(Dispatchers.autoSave) {
-            val content = newText?.toString() ?: ""
-            val file = currentOpenTxtFile ?: run {
-                // 当前没有打开的文件，尝试创建一个新文件
-                val fileName = getFileName(currentOpenTxtFileTitle ?: R.string.default_title_name.stringRes)
-
+    fun saveText(newText: CharSequence?, onFailed: () -> Unit) {
+        val oldState = contentSaveState.value
+        changeContentSaveState(SaveState.SAVING)
+        val content = newText?.toString() ?: ""
+        var file = currentOpenTxtFile
+        if (file == null) {
+            // 当前没有打开的文件，尝试创建一个新文件
+            file = createNewFile()
+            if (file == null) {
+                ZLog.e(TAG, "saveText, create new file failed.")
+                onFailed()
+                changeContentSaveState(oldState)
+                return
             }
         }
+        runCatching {
+            val oldContent = file.content()
+            if (content != oldContent) {
+                FileWriter(file).use { it.write(content) }
+                changeContentSaveState(SaveState.SAVED)
+            }
+        }.onFailure {
+            ZLog.e(TAG, it)
+            changeContentSaveState(oldState)
+            onFailed()
+        }
+    }
+
+    private fun createNewFile(): File? {
+        val dir = getSaveDir()
+        if (dir == null) {
+            ZLog.e(TAG, "saveText, dir is null")
+            return null
+        }
+        val fileName = getFileName(currentOpenTxtFileTitle ?: R.string.default_title_name.stringRes)
+        return runCatching {
+            val newFile = File(getSaveDir(), fileName)
+            if (!newFile.exists()) {
+                newFile.createNewFile()
+            }
+            newFile
+        }.onFailure {
+            ZLog.e(TAG, it)
+        }.getOrNull()
     }
 
     override fun onCleared() {
