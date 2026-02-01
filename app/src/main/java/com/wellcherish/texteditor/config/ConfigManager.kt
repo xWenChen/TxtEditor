@@ -1,8 +1,5 @@
 package com.wellcherish.texteditor.config
 
-import com.wellcherish.texteditor.utils.SAVE_DIR
-import java.io.File
-
 /**
  * 配置管理器。会缓存当前生效的配置。后续的目标是该类中的所有变量都可以由用户配置。
  * */

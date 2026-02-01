@@ -2,6 +2,7 @@ package com.wellcherish.texteditor.page
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
@@ -10,10 +11,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.utils.*
 import com.wellcherish.texteditor.viewmodel.MainViewModel
-import com.wellcherish.txteditor.R
-import com.wellcherish.txteditor.databinding.ActivityMainBinding
+import com.wellcherish.texteditor.R
+import com.wellcherish.texteditor.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private var binding: ActivityMainBinding? = null
@@ -37,9 +39,13 @@ class MainActivity : AppCompatActivity() {
     private fun initView() {
         val mBinding = binding ?: return
 
+        updateTextCountTips()
+
         mBinding.editText.apply {
             filters = arrayOf(InputMaxCountFilter(ConfigManager.texMaxCount, ::showTextLimitTips))
             doAfterTextChanged {
+                // 更新字数提示
+                updateTextCountTips()
                 // 文本发生变化后，保存状态重置。
                 viewModel.changeContentSaveState(SaveState.NOT_SAVE)
             }
@@ -51,7 +57,10 @@ class MainActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.autoSave) {
                     // 点击返回按钮时，先进行保存，再响应返回按钮的点击操作。
                     viewModel.saveText(getContent(), ::onSavedFail)
-                    onBackPressedDispatcher.onBackPressed()
+                    withContext(Dispatchers.Main) {
+                        // 保存成功，退出页面。
+                        this@MainActivity.finish()
+                    }
                 }
             }
         })
@@ -61,14 +70,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateTextCountTips() {
+        val mBinding = binding ?: return
+        mBinding.tips.tvTextCountTips.text =
+            "${mBinding.editText.text?.length ?: 0}/${ConfigManager.texMaxCount}"
+    }
+
     /**
      * 变更保存状态的提示UI。
      * */
     private fun changeSaveStateUI(mBinding: ActivityMainBinding, newState: SaveState?) {
-        val saved = newState == SaveState.SAVED
         val color = when (newState) {
             SaveState.SAVED -> R.color.green.colorRes
-            SaveState.SAVING -> R.color.light_orange_300
+            SaveState.SAVING -> R.color.light_orange_500.colorRes
             else -> R.color.red_50.colorRes
         }
         mBinding.tips.apply {

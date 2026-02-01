@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.utils.*
-import com.wellcherish.txteditor.R
+import com.wellcherish.texteditor.R
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileWriter
@@ -57,12 +57,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * */
     fun saveText(newText: CharSequence?, onFailed: () -> Unit) {
         val oldState = contentSaveState.value
+        if (oldState == SaveState.SAVED) {
+            ZLog.e(TAG, "text saved.")
+            return
+        }
         changeContentSaveState(SaveState.SAVING)
         val content = newText?.toString() ?: ""
         var file = currentOpenTxtFile
         if (file == null) {
             // 当前没有打开的文件，尝试创建一个新文件
-            file = createNewFile()
+            createNewFile().let {
+                file = it
+                currentOpenTxtFile = it
+            }
             if (file == null) {
                 ZLog.e(TAG, "saveText, create new file failed.")
                 onFailed()
@@ -72,10 +79,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         runCatching {
             val oldContent = file.content()
-            if (content != oldContent) {
-                FileWriter(file).use { it.write(content) }
-                changeContentSaveState(SaveState.SAVED)
-            }
+            FileWriter(file).use { it.write(content) }
+            changeContentSaveState(SaveState.SAVED)
         }.onFailure {
             ZLog.e(TAG, it)
             changeContentSaveState(oldState)
