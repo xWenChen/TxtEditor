@@ -14,4 +14,6 @@ object ConfigManager {
     var charset = DefaultConfig.charset
 
     var texMaxCount = DefaultConfig.DEFAULT_TEXT_MAX_COUNT
+
+    var spanCount = DefaultConfig.GRID_SPAN_COUNT
 }

@@ -1,5 +1,6 @@
 package com.wellcherish.texteditor.utils
 
+import com.wellcherish.texteditor.R
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.config.DefaultConfig
 import java.io.File
@@ -57,6 +58,11 @@ fun File?.content(): String? {
     return FileReader(this).use { reader -> reader.readText() }
 }
 
+fun File?.getFileTitle(): String? {
+    this ?: return null
+    return this.name.split(FILE_NAME_SPLIT).firstOrNull()
+}
+
 /**
  * - 文件名的生成规则为：标题_TextEditor_Unix时间戳_TextEditor.txt。
  * - 最终的标题会取第一个部分的字符串。
@@ -98,4 +104,11 @@ fun getSaveDir(): File? {
         ZLog.e(TAG, e)
         null
     }
+}
+
+fun CharSequence?.safeTitle(): CharSequence {
+    if (this.isNullOrBlank()) {
+        return R.string.default_title_name.stringRes
+    }
+    return this
 }

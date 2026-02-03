@@ -12,25 +12,28 @@
         android:id="@+id/mainToolbar"
         layout="@layout/main_toolbar" />
 
-    <include
-        android:id="@+id/tips"
-        layout="@layout/editor_tips" />
-
-    <!--在 XML 中设置 android:inputType="textNoSuggestions"关闭拼写检查，可以显著提升大文本输入的流畅度。-->
-    <EditText
-        android:id="@+id/editText"
+    <TextView
+        android:id="@+id/tvTextCountTips"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/padding_middle"
         android:layout_marginVertical="@dimen/padding_small"
-        android:background="@null"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_size_v2"
-        android:gravity="start|top"
-        android:inputType="textMultiLine|textNoSuggestions"
-        android:scrollbars="vertical"
-        android:overScrollMode="always"
-        android:scrollbarStyle="insideInset"
-        android:hint="@string/input_text_hint"/>
+        android:gravity="start"
+        android:textSize="@dimen/text_size_v4"
+        android:textColor="@color/black_50"
+        tools:text="共30个文本文件"
+        />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_size_small"
+        android:layout_marginTop="@dimen/padding_small"
+        android:background="@color/divider" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

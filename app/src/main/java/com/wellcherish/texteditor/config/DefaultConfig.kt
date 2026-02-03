@@ -23,4 +23,6 @@ object DefaultConfig {
      * 通常情况下，单页加载 10KB 到 50KB（约 5,000 到 25,000 个汉字） 是一个比较合理的范围。此处采用25000个字符。
      * */
     const val DEFAULT_TEXT_MAX_COUNT = 25000
+
+    const val GRID_SPAN_COUNT = 2
 }

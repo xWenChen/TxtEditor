@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
+    <color name="black_10">#1A000000</color>
     <color name="black_30">#4D000000</color>
     <color name="black_50">#80000000</color>
     <color name="black_60">#99000000</color>
@@ -45,4 +46,10 @@
     <color name="grey_100">#F5F5F5</color>
     <color name="grey_200">#EEEEEE</color>
     <color name="grey_300">#E0E0E0</color>
+    <!-- 纸张感的浅灰色 -->
+    <color name="light_book_gray">#F5F5F5</color> <!-- 接近白纸灰 -->
+    <color name="warm_light_gray">#FAF9F7</color> <!-- 暖灰，略带米黄 -->
+    <color name="cool_light_gray">#F8F9FA</color> <!-- 冷灰，适合现代风格 -->
+
+    <color name="divider">@color/black_10</color>
 </resources>

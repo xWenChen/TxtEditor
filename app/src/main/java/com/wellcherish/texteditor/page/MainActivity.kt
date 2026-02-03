@@ -1,25 +1,23 @@
 package com.wellcherish.texteditor.page
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
-import androidx.core.widget.doAfterTextChanged
-import androidx.lifecycle.lifecycleScope
-import com.google.android.material.snackbar.Snackbar
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.wellcherish.texteditor.config.ConfigManager
-import com.wellcherish.texteditor.utils.*
-import com.wellcherish.texteditor.viewmodel.MainViewModel
-import com.wellcherish.texteditor.R
 import com.wellcherish.texteditor.databinding.ActivityMainBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.wellcherish.texteditor.mainlist.MainAdapter
+import com.wellcherish.texteditor.viewmodel.MainViewModel
 
+/**
+ * 文件列表页
+ * */
 class MainActivity : AppCompatActivity() {
     private var binding: ActivityMainBinding? = null
     private val viewModel: MainViewModel by viewModels()
+    private var adapter: MainAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +25,8 @@ class MainActivity : AppCompatActivity() {
             setContentView(this.root)
             binding = this
         }
+
+        viewModel.init()
         initView()
         initData()
     }
@@ -34,103 +34,29 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         binding = null
+        adapter = null
     }
 
     private fun initView() {
         val mBinding = binding ?: return
-
-        updateTextCountTips()
-
-        mBinding.editText.apply {
-            filters = arrayOf(InputMaxCountFilter(ConfigManager.texMaxCount, ::showTextLimitTips))
-            doAfterTextChanged {
-                // 更新字数提示
-                updateTextCountTips()
-                // 文本发生变化后，保存状态重置。
-                viewModel.changeContentSaveState(SaveState.NOT_SAVE)
-            }
+        mBinding.rv.adapter = MainAdapter().apply {
+            adapter = this
         }
-
-        // 拦截back按钮点击，先尝试保存文本。
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                lifecycleScope.launch(Dispatchers.autoSave) {
-                    // 点击返回按钮时，先进行保存，再响应返回按钮的点击操作。
-                    viewModel.saveText(getContent(), ::onSavedFail)
-                    withContext(Dispatchers.Main) {
-                        // 保存成功，退出页面。
-                        this@MainActivity.finish()
-                    }
-                }
-            }
-        })
-
-        viewModel.contentSaveState.observe(this) {
-            changeSaveStateUI(mBinding, it)
-        }
-    }
-
-    private fun updateTextCountTips() {
-        val mBinding = binding ?: return
-        mBinding.tips.tvTextCountTips.text =
-            "${mBinding.editText.text?.length ?: 0}/${ConfigManager.texMaxCount}"
-    }
-
-    /**
-     * 变更保存状态的提示UI。
-     * */
-    private fun changeSaveStateUI(mBinding: ActivityMainBinding, newState: SaveState?) {
-        val color = when (newState) {
-            SaveState.SAVED -> R.color.green.colorRes
-            SaveState.SAVING -> R.color.light_orange_500.colorRes
-            else -> R.color.red_50.colorRes
-        }
-        mBinding.tips.apply {
-            tvSaveState.setText(
-                when (newState) {
-                    SaveState.SAVED -> R.string.saved
-                    SaveState.SAVING -> R.string.saving
-                    else -> R.string.not_save
-                }
-            )
-            tvSaveState.setTextColor(color)
-
-            ivSaveState.setImageResource(
-                when (newState) {
-                    SaveState.SAVED -> R.drawable.ic_ok
-                    SaveState.SAVING -> R.drawable.ic_saving
-                    else -> R.drawable.ic_warning
-                }
-            )
-            ivSaveState.setColorFilter(color)
-        }
+        mBinding.rv.layoutManager = StaggeredGridLayoutManager(
+            ConfigManager.spanCount,
+            RecyclerView.VERTICAL
+        )
     }
 
     private fun initData() {
-        viewModel.startAutoSave(::getContent, ::onSavedFail)
-    }
-
-    private fun getContent(): CharSequence? {
-        return binding?.editText?.text
-    }
-
-    private fun onSavedFail() {
-
-    }
-
-    /**
-     * 提示文本打到最大数量限制。
-     * */
-    private fun showTextLimitTips() {
-        val view = binding?.editText ?: return ZLog.e(TAG, "showTextLimitTips, view=null")
-        Snackbar.make(
-            view,
-            R.string.text_count_to_limit.stringRes,
-            Snackbar.LENGTH_LONG
-        ).apply {
-            setActionTextColor(R.color.light_orange_300.colorRes)
-            show();
+        viewModel.dataListLiveData.observe(this) {
+            it ?: return@observe
+            adapter?.submitList(it)
         }
+    }
+
+    private fun startEditorPage() {
+        startActivity(Intent(this, EditorActivity::class.java))
     }
 
     companion object {
