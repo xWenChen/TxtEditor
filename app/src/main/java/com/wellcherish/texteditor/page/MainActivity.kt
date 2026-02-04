@@ -1,14 +1,19 @@
 package com.wellcherish.texteditor.page
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.wellcherish.texteditor.bean.FileItem
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.databinding.ActivityMainBinding
 import com.wellcherish.texteditor.mainlist.MainAdapter
+import com.wellcherish.texteditor.utils.DataManager
+import com.wellcherish.texteditor.utils.KEY_FILE_PATH
 import com.wellcherish.texteditor.viewmodel.MainViewModel
 
 /**
@@ -39,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initView() {
         val mBinding = binding ?: return
-        mBinding.rv.adapter = MainAdapter().apply {
+        mBinding.rv.adapter = MainAdapter(::noDoubleClick).apply {
             adapter = this
         }
         mBinding.rv.layoutManager = StaggeredGridLayoutManager(
@@ -55,8 +60,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun noDoubleClick(view: View, position: Int, data: FileItem) {
+        DataManager.chosenFileData = data
+        startEditorPage()
+    }
+
     private fun startEditorPage() {
-        startActivity(Intent(this, EditorActivity::class.java))
+        val intent = Intent(this, EditorActivity::class.java)
+        startActivity(intent)
     }
 
     companion object {

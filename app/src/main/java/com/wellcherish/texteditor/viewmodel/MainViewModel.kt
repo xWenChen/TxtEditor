@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    val dataListLiveData = MutableLiveData(listOf<FileItem?>())
+    val dataListLiveData = MutableLiveData<List<FileItem>>()
     private val fileRepository = FileRepository
 
     fun init() {
@@ -31,7 +31,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             dataListLiveData.value = files
         }
-
     }
 
     companion object {

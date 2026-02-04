@@ -35,7 +35,7 @@
 
     <!--在 XML 中设置 android:inputType="textNoSuggestions"关闭拼写检查，可以显著提升大文本输入的流畅度。-->
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/tvContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="@dimen/padding_middle"

@@ -23,7 +23,7 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
     /**
      * 当前正在被编辑的Txt文件。
      * */
-    var currentOpenTxtFile: File? = null
+    var currentOpenFile: File? = null
 
     fun changeContentSaveState(newState: SaveState?) {
         if (contentSaveState.value == newState) {
@@ -63,12 +63,12 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
         }
         changeContentSaveState(SaveState.SAVING)
         val content = newText?.toString() ?: ""
-        var file = currentOpenTxtFile
+        var file = currentOpenFile
         if (file == null) {
             // 当前没有打开的文件，尝试创建一个新文件
             createNewFile(title).let {
                 file = it
-                currentOpenTxtFile = it
+                currentOpenFile = it
             }
             if (file == null) {
                 ZLog.e(TAG, "saveText, create new file failed.")
@@ -79,6 +79,9 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
         }
         runCatching {
             val oldContent = file.content()
+            if (oldContent == newText) {
+                return@runCatching
+            }
             FileWriter(file).use { it.write(content) }
             changeContentSaveState(SaveState.SAVED)
         }.onFailure {

@@ -1,6 +1,7 @@
 package com.wellcherish.texteditor.mainlist
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -9,8 +10,9 @@ import com.wellcherish.texteditor.bean.FileItem
 import com.wellcherish.texteditor.databinding.TextFileItemBinding
 import com.wellcherish.texteditor.utils.ZLog
 import com.wellcherish.texteditor.utils.safeTitle
+import com.wellcherish.texteditor.utils.setNoDoubleClickListener
 
-class MainAdapter : ListAdapter<FileItem, FileViewHolder>(
+class MainAdapter(private val noDoubleClick: (View, Int, FileItem) -> Unit) : ListAdapter<FileItem, FileViewHolder>(
     object : DiffUtil.ItemCallback<FileItem>() {
         override fun areItemsTheSame(oldItem: FileItem, newItem: FileItem): Boolean {
             return oldItem.filePath == newItem.filePath
@@ -22,7 +24,8 @@ class MainAdapter : ListAdapter<FileItem, FileViewHolder>(
     }
 ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
-        return FileViewHolder(TextFileItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        val binding = TextFileItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return FileViewHolder(binding, noDoubleClick)
     }
 
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
@@ -31,7 +34,10 @@ class MainAdapter : ListAdapter<FileItem, FileViewHolder>(
     }
 }
 
-class FileViewHolder(val binding: TextFileItemBinding) : RecyclerView.ViewHolder(binding.root) {
+class FileViewHolder(
+    private val binding: TextFileItemBinding,
+    private val noDoubleClick: (View, Int, FileItem) -> Unit
+) : RecyclerView.ViewHolder(binding.root) {
     fun bind(position: Int, data: FileItem?) {
         if (data == null) {
             ZLog.e(TAG, "data=null, pos:$position")
@@ -39,6 +45,9 @@ class FileViewHolder(val binding: TextFileItemBinding) : RecyclerView.ViewHolder
         }
         binding.tvTitle.text = data.title.safeTitle()
         binding.tvContent.text = data.text
+        binding.root.setNoDoubleClickListener {
+            noDoubleClick(it, position, data)
+        }
     }
 
     companion object {

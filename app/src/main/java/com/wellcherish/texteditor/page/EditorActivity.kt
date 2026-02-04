@@ -15,6 +15,7 @@ import com.wellcherish.texteditor.databinding.ActivityEditorBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 
 /**
  * 编辑页
@@ -22,6 +23,11 @@ import kotlinx.coroutines.withContext
 class EditorActivity : AppCompatActivity() {
     private var binding: ActivityEditorBinding? = null
     private val viewModel: EditorViewModel by viewModels()
+
+    /**
+     * 是否跳过状态改变。
+     * */
+    private var skipChangeState: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,13 +49,16 @@ class EditorActivity : AppCompatActivity() {
 
         updateTextCountTips()
 
-        mBinding.editText.apply {
+        mBinding.tvContent.apply {
             filters = arrayOf(InputMaxCountFilter(ConfigManager.texMaxCount, ::showTextLimitTips))
             doAfterTextChanged {
                 // 更新字数提示
                 updateTextCountTips()
-                // 文本发生变化后，保存状态重置。
-                viewModel.changeContentSaveState(SaveState.NOT_SAVE)
+                if (!skipChangeState) {
+                    // 文本发生变化后，保存状态重置。
+                    viewModel.changeContentSaveState(SaveState.NOT_SAVE)
+                }
+                skipChangeState = false
             }
         }
 
@@ -70,12 +79,29 @@ class EditorActivity : AppCompatActivity() {
         viewModel.contentSaveState.observe(this) {
             changeSaveStateUI(mBinding, it)
         }
+
+        initContent()
+    }
+
+    private fun initContent() {
+        val mBinding = binding ?: return
+
+        val fileData = DataManager.chosenFileData
+        val filePath = fileData?.filePath
+        if (filePath == null) {
+            ZLog.w(TAG, "initContent, filePath=null")
+            return
+        }
+        skipChangeState = true
+        viewModel.currentOpenFile = File(filePath)
+        mBinding.title.setText(fileData.title)
+        mBinding.tvContent.setText(fileData.text)
     }
 
     private fun updateTextCountTips() {
         val mBinding = binding ?: return
         mBinding.tips.tvTextCountTips.text =
-            "${mBinding.editText.text?.length ?: 0}/${ConfigManager.texMaxCount}"
+            "${mBinding.tvContent.text?.length ?: 0}/${ConfigManager.texMaxCount}"
     }
 
     /**
@@ -117,7 +143,7 @@ class EditorActivity : AppCompatActivity() {
     }
 
     private fun getContent(): CharSequence? {
-        return binding?.editText?.text
+        return binding?.tvContent?.text
     }
 
     private fun onSavedFail() {
@@ -128,7 +154,7 @@ class EditorActivity : AppCompatActivity() {
      * 提示文本打到最大数量限制。
      * */
     private fun showTextLimitTips() {
-        val view = binding?.editText ?: return ZLog.e(TAG, "showTextLimitTips, view=null")
+        val view = binding?.tvContent ?: return ZLog.e(TAG, "showTextLimitTips, view=null")
         Snackbar.make(
             view,
             R.string.text_count_to_limit.stringRes,

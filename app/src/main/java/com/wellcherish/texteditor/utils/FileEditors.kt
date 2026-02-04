@@ -17,6 +17,10 @@ const val FILE_NAME_SPLIT = "_"
  * */
 const val SAVE_DIR = "TextEditor"
 
+const val KEY_FILE_PATH = "keyFilePath"
+const val KEY_TITLE = "keyTitle"
+const val KEY_CONTENT = "keyContent"
+
 /**
  * 文件默认的存储路径是APP内部目录
  * */
