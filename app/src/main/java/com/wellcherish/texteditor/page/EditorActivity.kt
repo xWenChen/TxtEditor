@@ -1,6 +1,5 @@
 package com.wellcherish.texteditor.page
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -20,7 +19,7 @@ import java.io.File
 /**
  * 编辑页
  * */
-class EditorActivity : AppCompatActivity() {
+class EditorActivity : BaseActivity() {
     private var binding: ActivityEditorBinding? = null
     private val viewModel: EditorViewModel by viewModels()
 
@@ -79,6 +78,21 @@ class EditorActivity : AppCompatActivity() {
         viewModel.contentSaveState.observe(this) {
             changeSaveStateUI(mBinding, it)
         }
+
+        mBinding.mainToolbar.apply {
+            initToolbar(
+                this,
+                onSaveClick = {
+
+                },
+                onSettingClick = {
+
+                }
+            )
+            setShowAdd(false)
+        }
+
+
 
         initContent()
     }

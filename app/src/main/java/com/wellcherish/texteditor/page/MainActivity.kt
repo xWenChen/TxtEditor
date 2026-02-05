@@ -12,6 +12,7 @@ import com.wellcherish.texteditor.bean.FileItem
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.databinding.ActivityMainBinding
 import com.wellcherish.texteditor.mainlist.MainAdapter
+import com.wellcherish.texteditor.ui.ToolbarManager
 import com.wellcherish.texteditor.utils.DataManager
 import com.wellcherish.texteditor.utils.KEY_FILE_PATH
 import com.wellcherish.texteditor.viewmodel.MainViewModel
@@ -19,7 +20,7 @@ import com.wellcherish.texteditor.viewmodel.MainViewModel
 /**
  * 文件列表页
  * */
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private var binding: ActivityMainBinding? = null
     private val viewModel: MainViewModel by viewModels()
     private var adapter: MainAdapter? = null
@@ -51,6 +52,18 @@ class MainActivity : AppCompatActivity() {
             ConfigManager.spanCount,
             RecyclerView.VERTICAL
         )
+        mBinding.mainToolbar.apply {
+            initToolbar(
+                this,
+                onAddClick = {
+
+                },
+                onSettingClick = {
+
+                }
+            )
+            setShowSave(false)
+        }
     }
 
     private fun initData() {

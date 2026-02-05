@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <TextView
         android:id="@+id/ivAppName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/padding_middle"
+        android:layout_marginVertical="@dimen/padding_middle"
+        android:layout_marginEnd="@dimen/padding_small"
         android:gravity="start"
         android:textSize="@dimen/text_size_v1"
         android:textColor="@color/black"
@@ -16,31 +18,47 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ivSave"
+        app:layout_constraintEnd_toStartOf="@id/llButton"
         />
 
-    <ImageView
-        android:id="@+id/ivSave"
+    <LinearLayout
+        android:id="@+id/llButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/padding_middle"
-        android:src="@drawable/ic_save"
-        app:tint="@color/black"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/ivSetting" />
-
-    <ImageView
-        android:id="@+id/ivSetting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/padding_middle"
-        android:src="@drawable/ic_setting"
-        app:tint="@color/black"
+        android:layout_marginVertical="@dimen/padding_middle"
+        android:layout_marginEnd="@dimen/padding_small"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        />
+        >
+
+        <ImageView
+            android:id="@+id/ivAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/padding_small"
+            android:src="@drawable/ic_add"
+            app:tint="@color/black" />
+
+        <ImageView
+            android:id="@+id/ivSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/padding_small"
+            android:src="@drawable/ic_save"
+            app:tint="@color/black" />
+
+        <ImageView
+            android:id="@+id/ivSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/padding_small"
+            android:src="@drawable/ic_setting"
+            app:tint="@color/black" />
+
+    </LinearLayout>
 
     <View
         android:layout_width="0dp"
