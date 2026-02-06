@@ -66,7 +66,7 @@ class EditorActivity : BaseActivity() {
             override fun handleOnBackPressed() {
                 lifecycleScope.launch(Dispatchers.autoSave) {
                     // 点击返回按钮时，先进行保存，再响应返回按钮的点击操作。
-                    viewModel.saveText(getContentTitle(), getContent(), ::onSavedFail)
+                    saveText()
                     withContext(Dispatchers.Main) {
                         // 保存成功，退出页面。
                         this@EditorActivity.finish()
@@ -83,7 +83,7 @@ class EditorActivity : BaseActivity() {
             initToolbar(
                 this,
                 onSaveClick = {
-
+                    saveText()
                 },
                 onSettingClick = {
 
@@ -95,6 +95,10 @@ class EditorActivity : BaseActivity() {
 
 
         initContent()
+    }
+
+    private fun saveText() {
+        viewModel.saveText(getContentTitle(), getContent(), ::onSavedFail)
     }
 
     private fun initContent() {
@@ -113,9 +117,22 @@ class EditorActivity : BaseActivity() {
     }
 
     private fun updateTextCountTips() {
-        val mBinding = binding ?: return
-        mBinding.tips.tvTextCountTips.text =
-            "${mBinding.tvContent.text?.length ?: 0}/${ConfigManager.texMaxCount}"
+        lifecycleScope.launch(Dispatchers.Main) {
+            val text = withContext(Dispatchers.uiAsync) {
+                getTextCountTips()
+            }
+            binding?.tips?.tvTextCountTips?.text = text
+        }
+    }
+
+    private fun getTextCountTips(): String {
+        // 剔除换行和回车符后再统计字数
+        val filterText = binding?.tvContent?.text?.filter { it != '\n' && it != '\r' }
+        return String.format(
+            R.string.text_count_tips.stringRes,
+            filterText?.length ?: 0,
+            ConfigManager.texMaxCount
+        )
     }
 
     /**

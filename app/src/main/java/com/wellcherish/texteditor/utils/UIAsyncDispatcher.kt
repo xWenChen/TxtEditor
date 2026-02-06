@@ -3,7 +3,6 @@ package com.wellcherish.texteditor.utils
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.asCoroutineDispatcher
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -11,9 +10,9 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 
 /**
- * 自定义自动保存调度器，是单线程线程池，最多运行10个任务，1运行+9等待。
+ * UI相关的异步计算动作的单线程线程池。
  */
-object AutoSaveDispatcher : CoroutineDispatcher() {
+object UIAsyncDispatcher : CoroutineDispatcher() {
     // 1. 定义一个线程池：1个核心线程，1个最大线程
     // 2. 队列长度设为 9 (等待任务)
     // 3. 拒绝策略设为 DiscardPolicy (直接丢弃新来的请求)
@@ -22,7 +21,7 @@ object AutoSaveDispatcher : CoroutineDispatcher() {
         1,
         0L,
         TimeUnit.MILLISECONDS,
-        LinkedBlockingQueue<Runnable>(9),
+        LinkedBlockingQueue(Int.MAX_VALUE),
         Executors.defaultThreadFactory(),
         /**
          * 核心：队列满时丢弃最新任务
@@ -38,8 +37,8 @@ object AutoSaveDispatcher : CoroutineDispatcher() {
 }
 
 /**
- * 自定义自动保存调度器，是单线程线程池，最多运行10个任务，1运行+9等待。
+ * UI相关的异步计算动作的单线程线程池。
  */
-// 语法糖：Dispatchers.autoSave
-val Dispatchers.autoSave: CoroutineDispatcher
-    get() = AutoSaveDispatcher
+// 语法糖：Dispatchers.uiAsync
+val Dispatchers.uiAsync: CoroutineDispatcher
+    get() = UIAsyncDispatcher

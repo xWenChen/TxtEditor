@@ -52,4 +52,5 @@
     <color name="cool_light_gray">#F8F9FA</color> <!-- 冷灰，适合现代风格 -->
 
     <color name="divider">@color/black_10</color>
+    <color name="bg_page">@color/grey_100</color>
 </resources>

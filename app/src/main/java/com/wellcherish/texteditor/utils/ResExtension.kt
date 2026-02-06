@@ -8,3 +8,6 @@ val Int.colorRes: Int
 
 val Int.stringRes: String
     get() = MainApplication.context.getString(this)
+
+val Int.dimenRes: Int
+    get() = MainApplication.context.resources.getDimensionPixelSize(this)

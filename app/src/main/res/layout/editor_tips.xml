@@ -49,13 +49,13 @@
         tools:text="@string/not_save"
         />
 
-    <View
+<!--    <View
         android:layout_width="0dp"
         android:layout_height="@dimen/divider_size_small"
         android:layout_marginTop="@dimen/padding_small"
         android:background="@color/divider"
         app:layout_constraintTop_toBottomOf="@id/tvTextCountTips"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"/>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

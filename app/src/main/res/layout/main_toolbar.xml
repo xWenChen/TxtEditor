@@ -10,6 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/padding_middle"
+        android:layout_marginStart="@dimen/padding_middle"
         android:layout_marginEnd="@dimen/padding_small"
         android:gravity="start"
         android:textSize="@dimen/text_size_v1"
@@ -59,14 +60,5 @@
             app:tint="@color/black" />
 
     </LinearLayout>
-
-    <View
-        android:layout_width="0dp"
-        android:layout_height="@dimen/divider_size_small"
-        android:layout_marginTop="@dimen/padding_small"
-        android:background="@color/divider"
-        app:layout_constraintTop_toBottomOf="@id/ivAppName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,4 +6,6 @@
     <string name="input_text_hint">请输入文本…</string>
     <string name="default_title_name">标题</string>
     <string name="text_count_to_limit">字数已达到最大，请删除文本后再输入内容。</string>
+    <string name="text_count_tips">字数: %d/%d</string>
+    <string name="file_count_tips">共%d个文本文件</string>
 </resources>

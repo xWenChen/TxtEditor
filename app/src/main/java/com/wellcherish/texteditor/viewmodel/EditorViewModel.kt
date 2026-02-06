@@ -97,7 +97,7 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
             ZLog.e(TAG, "saveText, dir is null")
             return null
         }
-        val fileName = getFileName(title.safeTitle())
+        val fileName = getFileName(title ?: "")
         return runCatching {
             val newFile = File(getSaveDir(), fileName)
             if (!newFile.exists()) {
