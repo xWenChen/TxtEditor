@@ -18,7 +18,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val fileRepository = FileRepository
 
     val onFileChanged = run@{ _: String, changeType: FileChangeType ->
-        if (changeType == FileChangeType.UPDATE || changeType == FileChangeType.UNKNOWN) {
+        if (changeType == FileChangeType.UNKNOWN) {
             return@run
         }
         // 重新加载数据

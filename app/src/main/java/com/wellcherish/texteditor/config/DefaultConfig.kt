@@ -24,5 +24,7 @@ object DefaultConfig {
      * */
     const val DEFAULT_TEXT_MAX_COUNT = 25000
 
+    const val DEFAULT_TITLE_MAX_COUNT = 20
+
     const val GRID_SPAN_COUNT = 2
 }

@@ -40,6 +40,7 @@
 
     <color name="red_30">#4Dff0000</color>
     <color name="red_50">#80ff0000</color>
+    <color name="red_100">#ff0000</color>
 
     <color name="divider_color">#1A000000</color>
 

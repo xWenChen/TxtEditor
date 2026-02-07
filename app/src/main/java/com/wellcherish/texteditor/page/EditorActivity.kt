@@ -25,9 +25,10 @@ class EditorActivity : BaseActivity() {
     private val viewModel: EditorViewModel by viewModels()
 
     /**
-     * 是否跳过状态改变。
+     * 是否跳过状态改变。首次进入页面时，可以跳过。
      * */
     private var skipChangeState: Boolean = false
+    private var skipTitleChangeState: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +42,7 @@ class EditorActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        viewModel.onDestroy()
         binding = null
     }
 
@@ -48,6 +50,17 @@ class EditorActivity : BaseActivity() {
         val mBinding = binding ?: return
 
         updateTextCountTips()
+
+        mBinding.title.apply {
+            filters = arrayOf(InputMaxCountFilter(ConfigManager.titleMaxCount, ::showTextLimitTips))
+            doAfterTextChanged {
+                if (!skipTitleChangeState) {
+                    // 文本发生变化后，保存状态重置。
+                    viewModel.changeContentSaveState(SaveState.NOT_SAVE)
+                }
+                skipTitleChangeState = false
+            }
+        }
 
         mBinding.tvContent.apply {
             filters = arrayOf(InputMaxCountFilter(ConfigManager.texMaxCount, ::showTextLimitTips))
@@ -92,8 +105,6 @@ class EditorActivity : BaseActivity() {
             )
         }
 
-
-
         initContent()
     }
 
@@ -105,12 +116,14 @@ class EditorActivity : BaseActivity() {
         val mBinding = binding ?: return
 
         val fileData = DataManager.chosenFileData
+        DataManager.chosenFileData = null
         val filePath = fileData?.filePath
         if (filePath == null) {
             ZLog.w(TAG, "initContent, filePath=null")
             return
         }
         skipChangeState = true
+        skipTitleChangeState = true
         viewModel.currentOpenFile = File(filePath)
         mBinding.title.setText(fileData.title)
         mBinding.tvContent.setText(fileData.text)
@@ -191,7 +204,8 @@ class EditorActivity : BaseActivity() {
             R.string.text_count_to_limit.stringRes,
             Snackbar.LENGTH_LONG
         ).apply {
-            setActionTextColor(R.color.light_orange_300.colorRes)
+            setBackgroundTint(R.color.main_green.colorRes)
+            setTextColor(R.color.red_100.colorRes)
             show();
         }
     }

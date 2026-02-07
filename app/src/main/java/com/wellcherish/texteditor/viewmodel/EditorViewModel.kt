@@ -32,6 +32,12 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
      * */
     var fileChangeType = FileChangeType.UNKNOWN
 
+    fun onDestroy() {
+        changeContentSaveState(SaveState.SAVED)
+        var currentOpenFile: File? = null
+        fileChangeType = FileChangeType.UNKNOWN
+    }
+
     fun changeContentSaveState(newState: SaveState?) {
         if (contentSaveState.value == newState) {
             return
@@ -70,24 +76,29 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
         }
         changeContentSaveState(SaveState.SAVING)
         val content = newText?.toString() ?: ""
-        var file = currentOpenFile
         if (fileChangeType == FileChangeType.UNKNOWN) {
             fileChangeType = FileChangeType.UPDATE
         }
+        var file = currentOpenFile
+        // 标题可能变化了，创建一个新文件，用于对比。
+        val newFile = createNewFile(title)
+        if (newFile == null) {
+            ZLog.e(TAG, "saveText, create new file failed.")
+            onFailed()
+            changeContentSaveState(oldState)
+            return
+        }
         if (file == null) {
             // 当前没有打开的文件，尝试创建一个新文件
-            createNewFile(title).let {
-                file = it
-                currentOpenFile = it
-                // 文件变更状态为新增。
-                fileChangeType = FileChangeType.ADDED
-            }
-            if (file == null) {
-                ZLog.e(TAG, "saveText, create new file failed.")
-                onFailed()
-                changeContentSaveState(oldState)
-                return
-            }
+            file = newFile
+            currentOpenFile = newFile
+            // 文件变更状态为新增。
+            fileChangeType = FileChangeType.ADDED
+        } else if (file.absolutePath != newFile.absolutePath) {
+            // 刪除旧文件，保留新文件。
+            file.delete()
+            file = newFile
+            currentOpenFile = newFile
         }
         runCatching {
             val oldContent = file.content()
@@ -97,7 +108,7 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
             FileWriter(file).use { it.write(content) }
             changeContentSaveState(SaveState.SAVED)
             // 通知文件发生变更。
-            FileEventBus.notifyFileChanged(file?.absolutePath, fileChangeType)
+            FileEventBus.notifyFileChanged(file.absolutePath, fileChangeType)
             // 保存成功，重置状态。
             fileChangeType = FileChangeType.UNKNOWN
         }.onFailure {
