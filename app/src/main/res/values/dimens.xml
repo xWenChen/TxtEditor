@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="padding_dp_64">64dp</dimen>
+    <dimen name="padding_dp_48">48dp</dimen>
+    <dimen name="padding_dp_32">32dp</dimen>
+    <dimen name="padding_dp_16">16dp</dimen>
+    <dimen name="padding_dp_12">12dp</dimen>
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_middle">8dp</dimen>
     <dimen name="padding_small">4dp</dimen>
@@ -28,4 +33,9 @@
     <dimen name="divider_size_small">1dp</dimen>
     <dimen name="divider_size_middle">2dp</dimen>
     <dimen name="divider_size_large">4dp</dimen>
+
+    <dimen name="empty_page_img_size">100dp</dimen>
+
+    <dimen name="add_icon_size">64dp</dimen>
+    <dimen name="add_icon_corner_radius">32dp</dimen>
 </resources>

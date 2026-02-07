@@ -1,4 +1,4 @@
-package com.wellcherish.texteditor.utils
+package com.wellcherish.texteditor.model
 
 /**
  * 内存开销：Android 的 String 对象在内存中以 UTF-16 编码存储，一个字符占 2 字节。50KB 的文本在内存中仅占约 100KB。即使加上 UI 控件的额外开销，也不会触发 OOM（内存溢出）。
@@ -26,4 +26,21 @@ enum class SaveState {
     NOT_SAVE,
     SAVING,
     SAVED
+}
+
+/**
+ * 文件变更的类型
+ * */
+enum class FileChangeType {
+    ADDED,
+    /**
+     * 文件被彻底删除。
+     * */
+    DELETED,
+    UPDATE,
+    /**
+     * 文件被移动到其他目录。
+     * */
+    MOVED,
+    UNKNOWN
 }

@@ -8,4 +8,6 @@
     <string name="text_count_to_limit">字数已达到最大，请删除文本后再输入内容。</string>
     <string name="text_count_tips">字数: %d/%d</string>
     <string name="file_count_tips">共%d个文本文件</string>
+    <string name="empty_page_tips">暂无文件，点击下方 + 可新建文件</string>
+    <string name="delete_file">刪除文件</string>
 </resources>

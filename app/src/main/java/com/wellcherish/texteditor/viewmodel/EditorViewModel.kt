@@ -5,8 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.wellcherish.texteditor.config.ConfigManager
+import com.wellcherish.texteditor.model.FileChangeType
+import com.wellcherish.texteditor.model.FileEventBus
 import com.wellcherish.texteditor.utils.*
-import com.wellcherish.texteditor.R
+import com.wellcherish.texteditor.model.SaveState
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.FileWriter
@@ -24,6 +26,11 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
      * 当前正在被编辑的Txt文件。
      * */
     var currentOpenFile: File? = null
+
+    /**
+     * 文件变更的类型，每次保存成功后，才会重置状态。防止异常场景下状态出错。
+     * */
+    var fileChangeType = FileChangeType.UNKNOWN
 
     fun changeContentSaveState(newState: SaveState?) {
         if (contentSaveState.value == newState) {
@@ -64,11 +71,16 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
         changeContentSaveState(SaveState.SAVING)
         val content = newText?.toString() ?: ""
         var file = currentOpenFile
+        if (fileChangeType == FileChangeType.UNKNOWN) {
+            fileChangeType = FileChangeType.UPDATE
+        }
         if (file == null) {
             // 当前没有打开的文件，尝试创建一个新文件
             createNewFile(title).let {
                 file = it
                 currentOpenFile = it
+                // 文件变更状态为新增。
+                fileChangeType = FileChangeType.ADDED
             }
             if (file == null) {
                 ZLog.e(TAG, "saveText, create new file failed.")
@@ -84,6 +96,10 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
             }
             FileWriter(file).use { it.write(content) }
             changeContentSaveState(SaveState.SAVED)
+            // 通知文件发生变更。
+            FileEventBus.notifyFileChanged(file?.absolutePath, fileChangeType)
+            // 保存成功，重置状态。
+            fileChangeType = FileChangeType.UNKNOWN
         }.onFailure {
             ZLog.e(TAG, it)
             changeContentSaveState(oldState)

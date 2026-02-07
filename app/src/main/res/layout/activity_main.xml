@@ -1,35 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
     android:background="@color/bg_page">
 
     <com.wellcherish.texteditor.ui.MainToolbar
         android:id="@+id/mainToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/tvTextCountTips"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/padding_middle"
-        android:layout_marginVertical="@dimen/padding_small"
+        android:layout_marginHorizontal="@dimen/padding_large"
+        android:paddingVertical="@dimen/padding_small"
         android:gravity="start"
         android:textSize="@dimen/text_size_v4"
         android:textColor="@color/black_50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mainToolbar"
         tools:text="共30个文本文件"
         />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/padding_middle"/>
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/padding_middle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTextCountTips"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
-</LinearLayout>
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/contentView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="tvTextCountTips,rv"
+        tools:visibility="gone"/>
+
+    <!-- 空布局 -->
+    <ImageView
+        android:id="@+id/ivEmpty"
+        android:layout_width="@dimen/empty_page_img_size"
+        android:layout_height="@dimen/empty_page_img_size"
+        android:layout_marginBottom="@dimen/padding_middle"
+        android:src="@drawable/ic_no_file"
+        app:tint="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tvEmptyTips"
+        app:layout_constraintVertical_chainStyle="packed"
+        />
+
+    <TextView
+        android:id="@+id/tvEmptyTips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/empty_page_tips"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_v2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivEmpty"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/emptyView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="ivEmpty,tvEmptyTips"
+        tools:visibility="visible"/>
+
+    <ImageView
+        android:id="@+id/ivAdd"
+        android:layout_width="@dimen/add_icon_size"
+        android:layout_height="@dimen/add_icon_size"
+        android:background="@drawable/bg_add_icon"
+        android:layout_marginEnd="@dimen/padding_dp_32"
+        android:layout_marginBottom="@dimen/padding_dp_64"
+        android:padding="@dimen/padding_dp_16"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_add"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

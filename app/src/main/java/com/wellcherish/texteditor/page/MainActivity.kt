@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.wellcherish.texteditor.R
@@ -11,7 +12,9 @@ import com.wellcherish.texteditor.bean.FileItem
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.databinding.ActivityMainBinding
 import com.wellcherish.texteditor.mainlist.MainAdapter
+import com.wellcherish.texteditor.model.FileEventBus
 import com.wellcherish.texteditor.utils.DataManager
+import com.wellcherish.texteditor.utils.setNoDoubleClickListener
 import com.wellcherish.texteditor.utils.stringRes
 import com.wellcherish.texteditor.viewmodel.MainViewModel
 
@@ -31,12 +34,14 @@ class MainActivity : BaseActivity() {
         }
 
         viewModel.init()
+        FileEventBus.registerFileChangeListener(viewModel.onFileChanged)
         initView()
         initData()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        FileEventBus.unregisterFileChangeListener(viewModel.onFileChanged)
         binding = null
         adapter = null
     }
@@ -48,12 +53,13 @@ class MainActivity : BaseActivity() {
             layoutManager = StaggeredGridLayoutManager(ConfigManager.spanCount, RecyclerView.VERTICAL)
         }
 
+        mBinding.ivAdd.setNoDoubleClickListener {
+            startEditorPage()
+        }
+
         mBinding.mainToolbar.apply {
             initToolbar(
                 this,
-                onAddClick = {
-                    startEditorPage()
-                },
                 onSettingClick = {
 
                 }
@@ -65,9 +71,21 @@ class MainActivity : BaseActivity() {
     private fun initData() {
         viewModel.dataListLiveData.observe(this) {
             binding?.tvTextCountTips?.text = getFileCountHint(it?.size ?: 0)
-            it ?: return@observe
+            if (it.isNullOrEmpty()) {
+                showEmptyPage(true)
+                return@observe
+            }
+            showEmptyPage(false)
             adapter?.submitList(it)
         }
+    }
+
+    private fun showEmptyPage(isShow: Boolean) {
+        binding?.apply {
+            emptyView.isVisible = isShow
+            contentView.isVisible = !isShow
+        }
+
     }
 
     private fun getFileCountHint(listSize: Int): String {

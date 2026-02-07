@@ -15,7 +15,11 @@ const val FILE_NAME_SPLIT = "_"
 /**
  * 文件存储的目录
  * */
-const val SAVE_DIR = "TextEditor"
+const val SAVE_DIR = "TextEditor/content"
+/**
+ * 被删除的文件，存放在这个目录下。这个目录充当了回收站的作用。
+ * */
+const val DELETED_FILE_DIR = "TextEditor/deletedFile"
 
 const val KEY_FILE_PATH = "keyFilePath"
 const val KEY_TITLE = "keyTitle"

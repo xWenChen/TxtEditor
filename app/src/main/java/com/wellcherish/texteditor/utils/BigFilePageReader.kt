@@ -1,5 +1,6 @@
 package com.wellcherish.texteditor.utils
 
+import com.wellcherish.texteditor.model.FileOpenMode
 import java.io.File
 import java.io.RandomAccessFile
 import java.nio.charset.Charset

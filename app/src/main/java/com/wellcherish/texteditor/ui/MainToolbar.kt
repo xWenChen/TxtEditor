@@ -25,24 +25,12 @@ class MainToolbar @JvmOverloads constructor(
         binding.ivAppName.text = title
     }
 
-    fun setShowAdd(isShow: Boolean) {
-        binding.ivAdd.isVisible = isShow
-    }
-
     fun setShowSave(isShow: Boolean) {
         binding.ivSave.isVisible = isShow
     }
 
     fun setShowSetting(isShow: Boolean) {
         binding.ivSetting.isVisible = isShow
-    }
-
-    fun setAddClickListener(onClick: ((View) -> Unit)?) {
-        if (onClick == null) {
-            binding.ivAdd.setOnClickListener(null)
-        } else {
-            binding.ivAdd.setNoDoubleClickListener(onClick = onClick)
-        }
     }
 
     fun setSaveClickListener(onClick: ((View) -> Unit)?) {

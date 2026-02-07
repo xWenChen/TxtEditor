@@ -11,6 +11,7 @@ import com.wellcherish.texteditor.utils.*
 import com.wellcherish.texteditor.viewmodel.EditorViewModel
 import com.wellcherish.texteditor.R
 import com.wellcherish.texteditor.databinding.ActivityEditorBinding
+import com.wellcherish.texteditor.model.SaveState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -89,7 +90,6 @@ class EditorActivity : BaseActivity() {
 
                 }
             )
-            setShowAdd(false)
         }
 
 

@@ -15,7 +15,6 @@ open class BaseActivity : AppCompatActivity() {
 
     protected fun initToolbar(
         toolbar: MainToolbar?,
-        onAddClick: ((View) -> Unit)? = null,
         onSaveClick: ((View) -> Unit)? = null,
         onSettingClick: ((View) -> Unit)? = null,
     ) {
@@ -23,7 +22,6 @@ open class BaseActivity : AppCompatActivity() {
         toolbarManager = ToolbarManager(
             this,
             toolbar,
-            onAddClick = onAddClick,
             onSaveClick = onSaveClick,
             onSettingClick = onSettingClick
         )
