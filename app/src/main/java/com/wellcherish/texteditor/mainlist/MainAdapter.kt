@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.wellcherish.texteditor.bean.FileItem
+import com.wellcherish.texteditor.database.bean.FileItem
 import com.wellcherish.texteditor.databinding.TextFileItemBinding
 import com.wellcherish.texteditor.utils.ZLog
 import com.wellcherish.texteditor.utils.safeTitle
@@ -15,7 +15,7 @@ import com.wellcherish.texteditor.utils.setNoDoubleClickListener
 class MainAdapter(private val noDoubleClick: (View, Int, FileItem) -> Unit) : ListAdapter<FileItem, FileViewHolder>(
     object : DiffUtil.ItemCallback<FileItem>() {
         override fun areItemsTheSame(oldItem: FileItem, newItem: FileItem): Boolean {
-            return oldItem.filePath == newItem.filePath
+            return oldItem.contentId == newItem.contentId
         }
 
         override fun areContentsTheSame(oldItem: FileItem, newItem: FileItem): Boolean {

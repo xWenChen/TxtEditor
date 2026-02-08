@@ -1,22 +1,26 @@
 package com.wellcherish.texteditor.page
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.animation.LinearInterpolator
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.wellcherish.texteditor.R
-import com.wellcherish.texteditor.bean.FileItem
+import com.wellcherish.texteditor.database.bean.FileItem
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.databinding.ActivityMainBinding
 import com.wellcherish.texteditor.mainlist.MainAdapter
 import com.wellcherish.texteditor.model.FileEventBus
-import com.wellcherish.texteditor.utils.DataManager
-import com.wellcherish.texteditor.utils.setNoDoubleClickListener
-import com.wellcherish.texteditor.utils.stringRes
+import com.wellcherish.texteditor.utils.*
 import com.wellcherish.texteditor.viewmodel.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 文件列表页
@@ -25,6 +29,7 @@ class MainActivity : BaseActivity() {
     private var binding: ActivityMainBinding? = null
     private val viewModel: MainViewModel by viewModels()
     private var adapter: MainAdapter? = null
+    private var animation: ObjectAnimator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,15 +38,25 @@ class MainActivity : BaseActivity() {
             binding = this
         }
 
-        viewModel.init()
-        FileEventBus.registerFileChangeListener(viewModel.onFileChanged)
-        initView()
-        initData()
+        lifecycleScope.launch(Dispatchers.Main) {
+            animation = createRotateAnim(binding?.ivState)
+            viewModel.changeLoadingState(true)
+            withContext(Dispatchers.IO) {
+                FileSyncToDbManager.trySync()
+                viewModel.init()
+                FileEventBus.registerFileChangeListener(viewModel.onFileChanged)
+            }
+            viewModel.changeLoadingState(false)
+            initView()
+            initData()
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         FileEventBus.unregisterFileChangeListener(viewModel.onFileChanged)
+        stopStateAnim()
+        animation = null
         binding = null
         adapter = null
     }
@@ -51,6 +66,7 @@ class MainActivity : BaseActivity() {
         mBinding.rv.apply {
             adapter = MainAdapter(::noDoubleClick).apply { this@MainActivity.adapter = this }
             layoutManager = StaggeredGridLayoutManager(ConfigManager.spanCount, RecyclerView.VERTICAL)
+            setHasFixedSize(true)
         }
 
         mBinding.ivAdd.setNoDoubleClickListener {
@@ -69,23 +85,73 @@ class MainActivity : BaseActivity() {
     }
 
     private fun initData() {
+        viewModel.showLoading.observe(this) {
+            checkPageState()
+        }
+        viewModel.showEmpty.observe(this) {
+            checkPageState()
+        }
+
         viewModel.dataListLiveData.observe(this) {
             binding?.tvTextCountTips?.text = getFileCountHint(it?.size ?: 0)
             if (it.isNullOrEmpty()) {
-                showEmptyPage(true)
+                viewModel.showEmpty.value = true
                 return@observe
             }
-            showEmptyPage(false)
+            viewModel.showEmpty.value = false
             adapter?.submitList(it)
         }
     }
 
-    private fun showEmptyPage(isShow: Boolean) {
-        binding?.apply {
-            emptyView.isVisible = isShow
-            contentView.isVisible = !isShow
+    /**
+     * 页面状态优先级
+     *
+     * loading态 > 空布局 > 列表
+     * */
+    private fun checkPageState() {
+        val mBinding = binding ?: return
+        val showState: Boolean
+        when {
+            viewModel.showLoading.value == true -> {
+                showState = true
+                mBinding.ivState.setImageResource(R.drawable.ic_loading)
+                mBinding.tvStateTips.setText(R.string.data_syncing_tips)
+                startStateAnim()
+            }
+            viewModel.showEmpty.value == true -> {
+                showState = true
+                mBinding.ivState.setImageResource(R.drawable.ic_no_file)
+                mBinding.tvStateTips.setText(R.string.empty_page_tips)
+                stopStateAnim()
+            }
+            else -> {
+                showState = false
+                stopStateAnim()
+            }
         }
 
+        mBinding.stateView.isVisible = showState
+        mBinding.contentView.isVisible = !showState
+    }
+
+    private fun startStateAnim() {
+        animation?.apply {
+            if (!isStarted) {
+                start()
+            }
+        }
+    }
+
+    private fun stopStateAnim() {
+        runCatching {
+            animation?.apply {
+                if (isStarted) {
+                    cancel()
+                }
+            }
+        }.onFailure {
+            ZLog.e(TAG, it)
+        }
     }
 
     private fun getFileCountHint(listSize: Int): String {
@@ -100,6 +166,17 @@ class MainActivity : BaseActivity() {
     private fun startEditorPage() {
         val intent = Intent(this, EditorActivity::class.java)
         startActivity(intent)
+    }
+
+    private fun createRotateAnim(view: View?): ObjectAnimator? {
+        view ?: return null
+        // 创建动画：从 0 度旋转到 360 度
+        return ObjectAnimator.ofFloat(view, "rotation", 0f, 360f).apply {
+            duration = 1000               // 持续时间 1 秒
+            repeatCount = ObjectAnimator.INFINITE // 无限循环
+            repeatMode = ObjectAnimator.RESTART  // 每次从头开始
+            interpolator = LinearInterpolator()  // 匀速转动
+        }
     }
 
     companion object {

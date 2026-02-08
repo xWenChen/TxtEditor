@@ -49,7 +49,7 @@
 
     <!-- 空布局 -->
     <ImageView
-        android:id="@+id/ivEmpty"
+        android:id="@+id/ivState"
         android:layout_width="@dimen/empty_page_img_size"
         android:layout_height="@dimen/empty_page_img_size"
         android:layout_marginBottom="@dimen/padding_middle"
@@ -58,12 +58,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tvEmptyTips"
+        app:layout_constraintBottom_toTopOf="@id/tvStateTips"
         app:layout_constraintVertical_chainStyle="packed"
         />
 
     <TextView
-        android:id="@+id/tvEmptyTips"
+        android:id="@+id/tvStateTips"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/empty_page_tips"
@@ -71,14 +71,14 @@
         android:textSize="@dimen/text_size_v2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivEmpty"
+        app:layout_constraintTop_toBottomOf="@id/ivState"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/emptyView"
+        android:id="@+id/stateView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="ivEmpty,tvEmptyTips"
+        app:constraint_referenced_ids="tvStateTips,ivState"
         tools:visibility="visible"/>
 
     <ImageView

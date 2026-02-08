@@ -6,28 +6,102 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import com.wellcherish.texteditor.bean.FileItem
-import com.wellcherish.texteditor.utils.ZLog
-import com.wellcherish.texteditor.utils.content
-import com.wellcherish.texteditor.utils.getFileTitle
-import com.wellcherish.texteditor.utils.getSaveDir
+import com.wellcherish.texteditor.bean.FileSystemFiles
+import com.wellcherish.texteditor.database.FileItemDatabase
+import com.wellcherish.texteditor.database.bean.FileItem
+import com.wellcherish.texteditor.utils.*
 import java.io.File
 
 object FileDataSource {
 
-    fun loadFiles(): List<FileItem> {
-        val dir = getSaveDir()
-        if (dir == null || !dir.isDirectory) {
-            ZLog.e(TAG, "loadFiles, dir not exist")
+    private val dao = FileItemDatabase.db.fileItemDao()
+
+    /**
+     * 更新数据库
+     * */
+    fun updateDbData(
+        insertList: List<FileItem>?,
+        deleteList: List<FileItem>?,
+        updateList: List<FileItem>?,
+    ) {
+        if (insertList != null) {
+            dao.insertAll(insertList)
+        }
+        if (deleteList != null) {
+            dao.deleteAll(deleteList)
+        }
+        if (updateList != null) {
+            dao.updateAll(updateList)
+        }
+    }
+
+    /**
+     * 从文件系统加载所有文件数据。
+     * */
+    fun loadFilesFromFileSystem(): FileSystemFiles {
+        return try {
+            FileSystemFiles(
+                getSaveDir()?.listFiles()?.filterNotNull()?.associateBy { it.absolutePath },
+                getDeletedFilesDir()?.listFiles()?.filterNotNull()?.associateBy { it.absolutePath }
+            )
+        } catch (e: Exception) {
+            ZLog.e(TAG, e)
+            FileSystemFiles()
+        }
+    }
+
+    /**
+     * 从数据库查询记录。
+     * */
+    fun loadAllFiles(): List<FileItem> {
+        return try {
+            // 查询出未被删除的数据。
+            dao.queryAll() ?: emptyList()
+        } catch (e: Exception) {
+            ZLog.e(TAG, e)
+            emptyList()
+        }
+    }
+
+    /**
+     * 从数据库查询未删除的数据。
+     * */
+    fun loadNotDeletedFiles(): List<FileItem> {
+        try {
+            // 查询出未被删除的数据。
+            val fileItems = dao.queryAllByTimeSort(false)
+            if (fileItems.isNullOrEmpty()) {
+                return emptyList()
+            }
+            fileItems.forEach {
+                it.text = it.filePath.fileContent()
+            }
+            return fileItems
+        } catch (e: Exception) {
+            ZLog.e(TAG, e)
             return emptyList()
         }
-        // 按修改时间降序排序，最新的在前面
-        return dir.listFiles()
-            ?.sortedByDescending {
-                it?.lastModified() ?: 0L
-            }?.mapNotNull {
-                it.toFileItem()
-            } ?: emptyList()
+    }
+
+    /**
+     * 更新或者插入数据
+     * */
+    fun updateOrInsertDbData(fileItem: FileItem): Boolean {
+        runCatching {
+            val oldItem = dao.queryByContentId(fileItem.contentId)
+            if (oldItem == null) {
+                // 新增
+                dao.insertAll(fileItem)
+                return true
+            } else {
+                // 更新
+                return dao.updateAll(fileItem) > 0
+            }
+        }.onFailure {
+            ZLog.e(TAG, it)
+            return false
+        }
+        return false
     }
 
     /**
@@ -79,16 +153,6 @@ object FileDataSource {
         }
 
         return uriList
-    }
-
-    private fun File?.toFileItem(): FileItem? {
-        this ?: return null
-
-        return FileItem(
-            this.absolutePath,
-            this.getFileTitle(),
-            this.content()
-        )
     }
 
     private const val TAG = "FileDataSource"

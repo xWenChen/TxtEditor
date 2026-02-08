@@ -5,6 +5,7 @@ import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.config.DefaultConfig
 import java.io.File
 import java.io.FileReader
+import java.util.*
 
 private const val TAG = "FileEditors"
 
@@ -17,13 +18,9 @@ const val FILE_NAME_SPLIT = "_"
  * */
 const val SAVE_DIR = "TextEditor/content"
 /**
- * 被删除的文件，存放在这个目录下。这个目录充当了回收站的作用。
+ * todo 被删除的文件，存放在这个目录下。这个目录充当了回收站的作用。
  * */
 const val DELETED_FILE_DIR = "TextEditor/deletedFile"
-
-const val KEY_FILE_PATH = "keyFilePath"
-const val KEY_TITLE = "keyTitle"
-const val KEY_CONTENT = "keyContent"
 
 /**
  * 文件默认的存储路径是APP内部目录
@@ -79,8 +76,8 @@ fun File?.getFileTitle(): String? {
  *
  * @return 最终的文件名。
  * */
-fun getFileName(title: CharSequence, fileSuffix: String = ".txt"): String {
-    return title.toString() + FILE_NAME_SPLIT +
+fun getFileName(title: String, fileSuffix: String = ".txt"): String {
+    return title + FILE_NAME_SPLIT +
             FILE_NAME_PART + FILE_NAME_SPLIT +
             System.currentTimeMillis() + FILE_NAME_SPLIT +
             FILE_NAME_PART +
@@ -114,9 +111,43 @@ fun getSaveDir(): File? {
     }
 }
 
+/**
+ * 获取被删除文件的根目录。
+ * */
+fun getDeletedFilesDir(): File? {
+    return try {
+        val rootDir = ConfigManager.rootPath.let {
+            if (it.isNullOrBlank()) {
+                DefaultConfig.saveRootDir
+            } else {
+                File(it)
+            }
+        }
+
+        val dir = File(rootDir, DELETED_FILE_DIR)
+
+        if (!dir.exists()) {
+            // 创建目录
+            dir.mkdirs()
+        }
+
+        dir
+    } catch (e: Exception) {
+        ZLog.e(TAG, e)
+        null
+    }
+}
+
 fun CharSequence?.safeTitle(): CharSequence {
     if (this.isNullOrBlank()) {
         return R.string.default_title_name.stringRes
     }
     return this
+}
+
+/**
+ * 随机内容id，uuid
+ * */
+fun generateContentId(): String {
+    return UUID.randomUUID().toString().replace("-", "")
 }

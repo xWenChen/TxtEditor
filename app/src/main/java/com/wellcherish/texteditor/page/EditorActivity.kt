@@ -40,6 +40,15 @@ class EditorActivity : BaseActivity() {
         initData()
     }
 
+    override fun onStop() {
+        super.onStop()
+        // 退出页面时，尝试保存下。
+        lifecycleScope.launch(Dispatchers.autoSave) {
+            // 点击返回按钮时，先进行保存，再响应返回按钮的点击操作。
+            saveText()
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         viewModel.onDestroy()
@@ -80,7 +89,7 @@ class EditorActivity : BaseActivity() {
             override fun handleOnBackPressed() {
                 lifecycleScope.launch(Dispatchers.autoSave) {
                     // 点击返回按钮时，先进行保存，再响应返回按钮的点击操作。
-                    saveText()
+                    //saveText()
                     withContext(Dispatchers.Main) {
                         // 保存成功，退出页面。
                         this@EditorActivity.finish()
@@ -124,7 +133,7 @@ class EditorActivity : BaseActivity() {
         }
         skipChangeState = true
         skipTitleChangeState = true
-        viewModel.currentOpenFile = File(filePath)
+        viewModel.currentOpenFile = fileData
         mBinding.title.setText(fileData.title)
         mBinding.tvContent.setText(fileData.text)
     }
@@ -179,15 +188,15 @@ class EditorActivity : BaseActivity() {
     }
 
     private fun initData() {
-        viewModel.startAutoSave(::getContentTitle, ::getContent, ::onSavedFail)
+        //viewModel.startAutoSave(::getContentTitle, ::getContent, ::onSavedFail)
     }
 
-    private fun getContentTitle(): CharSequence? {
-        return binding?.title?.text
+    private fun getContentTitle(): String? {
+        return binding?.title?.text?.toString()
     }
 
-    private fun getContent(): CharSequence? {
-        return binding?.tvContent?.text
+    private fun getContent(): String {
+        return binding?.tvContent?.text?.toString().orEmpty()
     }
 
     private fun onSavedFail() {

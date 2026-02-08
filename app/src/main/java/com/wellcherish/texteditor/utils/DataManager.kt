@@ -1,6 +1,6 @@
 package com.wellcherish.texteditor.utils
 
-import com.wellcherish.texteditor.bean.FileItem
+import com.wellcherish.texteditor.database.bean.FileItem
 
 object DataManager {
     /**
