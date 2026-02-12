@@ -1,10 +1,10 @@
 package com.wellcherish.texteditor.utils
 
-import com.wellcherish.texteditor.database.bean.FileItem
+import com.wellcherish.texteditor.bean.FileData
 
 object DataManager {
     /**
      * 被选中的文件数据
      * */
-    var chosenFileData: FileItem? = null
+    var chosenFileData: FileData? = null
 }

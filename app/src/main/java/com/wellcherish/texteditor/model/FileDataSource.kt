@@ -6,11 +6,11 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import com.wellcherish.texteditor.bean.FileData
 import com.wellcherish.texteditor.bean.FileSystemFiles
 import com.wellcherish.texteditor.database.FileItemDatabase
 import com.wellcherish.texteditor.database.bean.FileItem
 import com.wellcherish.texteditor.utils.*
-import java.io.File
 
 object FileDataSource {
 
@@ -66,17 +66,19 @@ object FileDataSource {
     /**
      * 从数据库查询未删除的数据。
      * */
-    fun loadNotDeletedFiles(): List<FileItem> {
+    fun loadNotDeletedFiles(): List<FileData> {
         try {
             // 查询出未被删除的数据。
             val fileItems = dao.queryAllByTimeSort(false)
             if (fileItems.isNullOrEmpty()) {
                 return emptyList()
             }
-            fileItems.forEach {
-                it.text = it.filePath.fileContent()
+            return fileItems.map {
+                FileData(
+                    dbData = it,
+                    text = it.filePath.fileContent()
+                )
             }
-            return fileItems
         } catch (e: Exception) {
             ZLog.e(TAG, e)
             return emptyList()

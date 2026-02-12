@@ -47,46 +47,26 @@
         app:constraint_referenced_ids="tvTextCountTips,rv"
         tools:visibility="gone"/>
 
-    <!-- 空布局 -->
-    <ImageView
-        android:id="@+id/ivState"
-        android:layout_width="@dimen/empty_page_img_size"
-        android:layout_height="@dimen/empty_page_img_size"
+    <!-- 空布局和加载态布局 -->
+    <com.wellcherish.texteditor.ui.StateView
+        android:id="@+id/stateView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginBottom="@dimen/padding_middle"
         android:src="@drawable/ic_no_file"
         app:tint="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tvStateTips"
-        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@id/tvTextCountTips"
+        app:layout_constraintBottom_toBottomOf="parent"
         />
-
-    <TextView
-        android:id="@+id/tvStateTips"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/empty_page_tips"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_size_v2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ivState"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/stateView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="tvStateTips,ivState"
-        tools:visibility="visible"/>
 
     <ImageView
         android:id="@+id/ivAdd"
         android:layout_width="@dimen/add_icon_size"
         android:layout_height="@dimen/add_icon_size"
         android:background="@drawable/bg_add_icon"
-        android:layout_marginEnd="@dimen/padding_dp_32"
+        android:layout_marginEnd="@dimen/dp_32"
         android:layout_marginBottom="@dimen/padding_dp_64"
         android:padding="@dimen/padding_dp_16"
         android:scaleType="centerCrop"

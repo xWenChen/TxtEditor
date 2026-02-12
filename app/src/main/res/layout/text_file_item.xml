@@ -7,6 +7,7 @@
     android:padding="@dimen/padding_middle">
 
     <LinearLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -38,5 +39,14 @@
             tools:text="这是内容部分。如果这里的文字非常多，超过了三行的限制，系统会自动在第三行的末尾添加省略号。这对于保持界面整洁非常有用，尤其是当你不确定后端返回的文本长度时。这段话足够长了，应该可以触发打点效果了。"/>
 
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivDelete"
+        android:layout_width="@dimen/dp_24"
+        android:layout_height="@dimen/dp_24"
+        android:layout_gravity="top|end"
+        android:src="@drawable/ic_delete_full"
+        android:scaleType="centerCrop"
+        />
 
 </FrameLayout>

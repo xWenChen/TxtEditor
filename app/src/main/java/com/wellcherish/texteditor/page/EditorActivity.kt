@@ -15,7 +15,6 @@ import com.wellcherish.texteditor.model.SaveState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 /**
  * 编辑页
@@ -126,7 +125,7 @@ class EditorActivity : BaseActivity() {
 
         val fileData = DataManager.chosenFileData
         DataManager.chosenFileData = null
-        val filePath = fileData?.filePath
+        val filePath = fileData?.dbData?.filePath
         if (filePath == null) {
             ZLog.w(TAG, "initContent, filePath=null")
             return
@@ -134,7 +133,7 @@ class EditorActivity : BaseActivity() {
         skipChangeState = true
         skipTitleChangeState = true
         viewModel.currentOpenFile = fileData
-        mBinding.title.setText(fileData.title)
+        mBinding.title.setText(fileData.dbData?.title)
         mBinding.tvContent.setText(fileData.text)
     }
 
@@ -215,7 +214,7 @@ class EditorActivity : BaseActivity() {
         ).apply {
             setBackgroundTint(R.color.main_green.colorRes)
             setTextColor(R.color.red_100.colorRes)
-            show();
+            show()
         }
     }
 

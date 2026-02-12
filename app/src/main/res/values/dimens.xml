@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="padding_dp_64">64dp</dimen>
-    <dimen name="padding_dp_48">48dp</dimen>
-    <dimen name="padding_dp_32">32dp</dimen>
+    <dimen name="dp_48">48dp</dimen>
+    <dimen name="dp_32">32dp</dimen>
+    <dimen name="dp_24">24dp</dimen>
     <dimen name="padding_dp_16">16dp</dimen>
     <dimen name="padding_dp_12">12dp</dimen>
     <dimen name="padding_large">16dp</dimen>

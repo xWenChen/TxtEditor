@@ -1,5 +1,6 @@
 package com.wellcherish.texteditor.model
 
+import com.wellcherish.texteditor.bean.FileData
 import com.wellcherish.texteditor.bean.FileSystemFiles
 import com.wellcherish.texteditor.database.bean.FileItem
 
@@ -31,7 +32,7 @@ object FileRepository {
     /**
      * 列举目录下的所有文件。
      * */
-    fun loadNotDeletedFiles(): List<FileItem> {
+    fun loadNotDeletedFiles(): List<FileData> {
         return source.loadNotDeletedFiles()
     }
 

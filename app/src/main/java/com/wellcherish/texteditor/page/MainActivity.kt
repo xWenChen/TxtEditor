@@ -1,21 +1,21 @@
 package com.wellcherish.texteditor.page
 
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.animation.LinearInterpolator
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.wellcherish.texteditor.R
-import com.wellcherish.texteditor.database.bean.FileItem
+import com.wellcherish.texteditor.bean.FileData
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.databinding.ActivityMainBinding
-import com.wellcherish.texteditor.mainlist.MainAdapter
+import com.wellcherish.texteditor.ui.MainAdapter
 import com.wellcherish.texteditor.model.FileEventBus
+import com.wellcherish.texteditor.ui.State
 import com.wellcherish.texteditor.utils.*
 import com.wellcherish.texteditor.viewmodel.MainViewModel
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,6 @@ class MainActivity : BaseActivity() {
     private var binding: ActivityMainBinding? = null
     private val viewModel: MainViewModel by viewModels()
     private var adapter: MainAdapter? = null
-    private var animation: ObjectAnimator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +38,6 @@ class MainActivity : BaseActivity() {
         }
 
         lifecycleScope.launch(Dispatchers.Main) {
-            animation = createRotateAnim(binding?.ivState)
             viewModel.changeLoadingState(true)
             withContext(Dispatchers.IO) {
                 FileSyncToDbManager.trySync()
@@ -55,8 +53,7 @@ class MainActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         FileEventBus.unregisterFileChangeListener(viewModel.onFileChanged)
-        stopStateAnim()
-        animation = null
+        binding?.stateView?.onDestroy()
         binding = null
         adapter = null
     }
@@ -64,7 +61,9 @@ class MainActivity : BaseActivity() {
     private fun initView() {
         val mBinding = binding ?: return
         mBinding.rv.apply {
-            adapter = MainAdapter(::noDoubleClick).apply { this@MainActivity.adapter = this }
+            adapter = MainAdapter(::noDoubleClick, ::onLongClick, ::deleteItem).apply {
+                this@MainActivity.adapter = this
+            }
             layoutManager = StaggeredGridLayoutManager(ConfigManager.spanCount, RecyclerView.VERTICAL)
             setHasFixedSize(true)
         }
@@ -82,6 +81,23 @@ class MainActivity : BaseActivity() {
             )
             setShowSave(false)
         }
+
+        // 拦截back按钮点击，先尝试保存文本。
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                lifecycleScope.launch(Dispatchers.autoSave) {
+                    // 点击返回按钮时，判断是否处于删除态，如果是，则退出删除态，否则退出页面。
+                    withContext(Dispatchers.Main) {
+                        if (viewModel.isDeleting) {
+                            viewModel.changeDeletingState(false)
+                        } else {
+                            // 保存成功，退出页面。
+                            this@MainActivity.finish()
+                        }
+                    }
+                }
+            }
+        })
     }
 
     private fun initData() {
@@ -110,73 +126,42 @@ class MainActivity : BaseActivity() {
      * */
     private fun checkPageState() {
         val mBinding = binding ?: return
-        val showState: Boolean
         when {
             viewModel.showLoading.value == true -> {
-                showState = true
-                mBinding.ivState.setImageResource(R.drawable.ic_loading)
-                mBinding.tvStateTips.setText(R.string.data_syncing_tips)
-                startStateAnim()
+                mBinding.stateView.showLoading()
             }
             viewModel.showEmpty.value == true -> {
-                showState = true
-                mBinding.ivState.setImageResource(R.drawable.ic_no_file)
-                mBinding.tvStateTips.setText(R.string.empty_page_tips)
-                stopStateAnim()
+                mBinding.stateView.showEmptyPage()
             }
             else -> {
-                showState = false
-                stopStateAnim()
+                mBinding.stateView.hide()
             }
         }
 
-        mBinding.stateView.isVisible = showState
-        mBinding.contentView.isVisible = !showState
-    }
-
-    private fun startStateAnim() {
-        animation?.apply {
-            if (!isStarted) {
-                start()
-            }
-        }
-    }
-
-    private fun stopStateAnim() {
-        runCatching {
-            animation?.apply {
-                if (isStarted) {
-                    cancel()
-                }
-            }
-        }.onFailure {
-            ZLog.e(TAG, it)
-        }
+        // stateView 和 contentView 的显示互斥。
+        mBinding.contentView.isVisible = mBinding.stateView.state == State.NONE
     }
 
     private fun getFileCountHint(listSize: Int): String {
         return String.format(R.string.file_count_tips.stringRes, listSize)
     }
 
-    private fun noDoubleClick(view: View, position: Int, data: FileItem) {
+    private fun noDoubleClick(view: View, position: Int, data: FileData) {
         DataManager.chosenFileData = data
         startEditorPage()
+    }
+
+    private fun onLongClick(view: View, position: Int, data: FileData) {
+        viewModel.changeDeletingState(true)
+    }
+
+    private fun deleteItem(view: View, position: Int, data: FileData) {
+        viewModel.deleteItem(position, data)
     }
 
     private fun startEditorPage() {
         val intent = Intent(this, EditorActivity::class.java)
         startActivity(intent)
-    }
-
-    private fun createRotateAnim(view: View?): ObjectAnimator? {
-        view ?: return null
-        // 创建动画：从 0 度旋转到 360 度
-        return ObjectAnimator.ofFloat(view, "rotation", 0f, 360f).apply {
-            duration = 1000               // 持续时间 1 秒
-            repeatCount = ObjectAnimator.INFINITE // 无限循环
-            repeatMode = ObjectAnimator.RESTART  // 每次从头开始
-            interpolator = LinearInterpolator()  // 匀速转动
-        }
     }
 
     companion object {

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.wellcherish.texteditor.bean.FileData
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.database.bean.FileItem
 import com.wellcherish.texteditor.model.FileChangeType
@@ -27,7 +28,7 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
     /**
      * 当前正在被编辑的Txt文件。
      * */
-    var currentOpenFile: FileItem? = null
+    var currentOpenFile: FileData? = null
 
     /**
      * 文件变更的类型，每次保存成功后，才会重置状态。防止异常场景下状态出错。
@@ -82,8 +83,8 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
             if (fileChangeType == FileChangeType.UNKNOWN) {
                 fileChangeType = FileChangeType.UPDATE
             }
-            val file = getOrCreateFileData(title, newText, oldState, onFailed)
-            val finalFile = file?.filePath?.let { File(it) } ?: return
+            val filePath = getOrCreateFileData(title, newText, oldState, onFailed)
+            val finalFile = filePath?.let { File(it) } ?: return
             val oldContent = finalFile.content()
             if (oldContent == newText) {
                 return@runCatching
@@ -109,10 +110,10 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
         newText: String,
         oldState: SaveState?,
         onFailed: () -> Unit
-    ): FileItem? {
-        var file = currentOpenFile
+    ): String? {
+        var dbData = currentOpenFile?.dbData
         // 没有文件，或者标题变了，都需要新建文件。
-        if (file == null || file.title.isNullOrEmpty() || file.title != title) {
+        if (dbData == null || dbData.title.isNullOrEmpty() || dbData.title != title) {
             // 标题可能变化了，创建一个新文件，用于对比。
             val newFile = createNewFile(title)
             if (newFile == null) {
@@ -122,34 +123,37 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
                 return null
             }
             // 当前没有打开的文件，尝试创建一个新文件
-            file = FileItem(
-                file?.id ?: 0L,
-                file?.contentId ?: generateContentId(),
+            dbData = FileItem(
+                dbData?.id ?: 0L,
+                dbData?.contentId ?: generateContentId(),
                 newFile.absolutePath,
                 newFile.getFileTitle(),
                 newFile.lastModified(),
-                file?.isDeleted ?: false,
-                newText
+                dbData?.isDeleted ?: false
             )
 
             // 数据保存到db
-            FileRepository.updateOrInsertDbData(file)
+            FileRepository.updateOrInsertDbData(dbData)
 
             // 刪除旧文件，保留新文件。
-            currentOpenFile?.filePath?.let {
+            currentOpenFile?.dbData?.filePath?.let {
                 File(it).delete()
             }
+            if (currentOpenFile == null) {
+                currentOpenFile = FileData()
+            }
             // 创建了新文件，需要删除旧文件
-            currentOpenFile = file
+            currentOpenFile?.dbData = dbData
+            currentOpenFile?.text = newText
             // 文件变更状态为新增。
             fileChangeType = FileChangeType.ADDED
         } else {
             // 直接更新数据库
-            file.updateTime = System.currentTimeMillis()
+            dbData.updateTime = System.currentTimeMillis()
             // 数据保存到db
-            FileRepository.updateOrInsertDbData(file)
+            FileRepository.updateOrInsertDbData(dbData)
         }
-        return file
+        return dbData.filePath
     }
 
     private fun createNewFile(title: String?): File? {
