@@ -6,10 +6,12 @@ import androidx.activity.viewModels
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
+import com.wellcherish.base.log.ZLog
+import com.wellcherish.texteditor.R
+import com.wellcherish.base.R as BaseR
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.utils.*
 import com.wellcherish.texteditor.viewmodel.EditorViewModel
-import com.wellcherish.texteditor.R
 import com.wellcherish.texteditor.databinding.ActivityEditorBinding
 import com.wellcherish.texteditor.model.SaveState
 import kotlinx.coroutines.Dispatchers
@@ -161,9 +163,9 @@ class EditorActivity : BaseActivity() {
      * */
     private fun changeSaveStateUI(mBinding: ActivityEditorBinding, newState: SaveState?) {
         val color = when (newState) {
-            SaveState.SAVED -> R.color.green.colorRes
-            SaveState.SAVING -> R.color.light_orange_500.colorRes
-            else -> R.color.red_50.colorRes
+            SaveState.SAVED -> BaseR.color.green.colorRes
+            SaveState.SAVING -> BaseR.color.light_orange_500.colorRes
+            else -> BaseR.color.red_50.colorRes
         }
         mBinding.tips.apply {
             tvSaveState.setText(
@@ -212,8 +214,8 @@ class EditorActivity : BaseActivity() {
             R.string.text_count_to_limit.stringRes,
             Snackbar.LENGTH_LONG
         ).apply {
-            setBackgroundTint(R.color.main_green.colorRes)
-            setTextColor(R.color.red_100.colorRes)
+            setBackgroundTint(BaseR.color.main_green.colorRes)
+            setTextColor(BaseR.color.red_100.colorRes)
             show()
         }
     }

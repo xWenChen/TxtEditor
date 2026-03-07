@@ -20,3 +20,5 @@ dependencyResolutionManagement {
 }
 rootProject.name = "TxtEditor"
 include ':app'
+include ':DataSync'
+include ':Base'

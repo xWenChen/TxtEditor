@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.wellcherish.texteditor.bean.FileData
 import com.wellcherish.texteditor.databinding.TextFileItemBinding
-import com.wellcherish.texteditor.utils.ZLog
+import com.wellcherish.base.log.ZLog
+import com.wellcherish.base.utils.DrawableUtils
 import com.wellcherish.texteditor.utils.safeTitle
 import com.wellcherish.texteditor.utils.setNoDoubleClickListener
 
@@ -35,7 +36,7 @@ class MainAdapter(
 
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(position, item)
+        holder.bind(position, itemCount, item)
     }
 }
 
@@ -45,23 +46,29 @@ class FileViewHolder(
     private val onLongClick: (View, Int, FileData) -> Unit,
     private val deleteIconClick: (View, Int, FileData) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(position: Int, data: FileData?) {
+    fun bind(position: Int, itemCount: Int, data: FileData?) {
         if (data == null) {
             ZLog.e(TAG, "data=null, pos:$position")
             return
         }
         binding.tvTitle.text = data.dbData?.title.safeTitle()
         binding.tvContent.text = data.text
-        binding.root.setNoDoubleClickListener {
-            if (data.showDelete) {
-                // 删除按钮展示时，不响应item的点击。
-                return@setNoDoubleClickListener
+        binding.content.apply {
+            background = DrawableUtils.randomBg()
+            // 必须设置 Clickable 才能触发水波纹效果
+            isClickable = true
+            isFocusable = true
+            setNoDoubleClickListener {
+                if (data.showDelete) {
+                    // 删除按钮展示时，不响应item的点击。
+                    return@setNoDoubleClickListener
+                }
+                noDoubleClick(it, position, data)
             }
-            noDoubleClick(it, position, data)
-        }
-        binding.root.setOnLongClickListener {
-            onLongClick(it, position, data)
-            true
+            setOnLongClickListener {
+                onLongClick(it, position, data)
+                true
+            }
         }
         binding.ivDelete.setNoDoubleClickListener {
             deleteIconClick(it, position, data)

@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval"
-    >
+<!-- 水波纹效果 -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/black_30">
 
-    <solid android:color="@color/light_green_500" />
-    <corners android:radius="@dimen/add_icon_corner_radius" />
+    <item android:id="@android:id/background">
+        <shape android:shape="oval">
+            <solid android:color="@color/light_green_500" />
+            <stroke
+                android:width="@dimen/divider_size_large"
+                android:color="@color/white"/>
+            <corners android:radius="@dimen/add_icon_corner_radius" />
+        </shape>
+    </item>
 
-</shape>
+    <item android:id="@android:id/mask">
+        <shape android:shape="oval">
+            <solid android:color="@color/black_30" />
+            <corners android:radius="@dimen/add_icon_corner_radius" />
+        </shape>
+    </item>
+</ripple>

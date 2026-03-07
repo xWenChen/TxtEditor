@@ -10,7 +10,7 @@ import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import com.wellcherish.texteditor.R
 import com.wellcherish.texteditor.databinding.StateViewBinding
-import com.wellcherish.texteditor.utils.ZLog
+import com.wellcherish.base.log.ZLog
 
 class StateView @JvmOverloads constructor(
     context: Context,

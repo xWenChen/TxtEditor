@@ -1,4 +1,4 @@
-package com.wellcherish.texteditor.utils
+package com.wellcherish.base.utils
 
 import androidx.core.content.ContextCompat
 import com.wellcherish.base.MainApplication

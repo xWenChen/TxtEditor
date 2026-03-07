@@ -6,6 +6,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import com.wellcherish.base.log.ZLog
 import com.wellcherish.texteditor.bean.FileData
 import com.wellcherish.texteditor.bean.FileSystemFiles
 import com.wellcherish.texteditor.database.FileItemDatabase

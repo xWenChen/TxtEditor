@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.wellcherish.base.log.ZLog
 import com.wellcherish.texteditor.bean.FileData
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.database.bean.FileItem

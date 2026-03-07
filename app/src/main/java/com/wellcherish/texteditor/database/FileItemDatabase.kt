@@ -3,7 +3,7 @@ package com.wellcherish.texteditor.database
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.wellcherish.texteditor.MainApplication
+import com.wellcherish.base.MainApplication
 import com.wellcherish.texteditor.database.bean.FileItem
 import com.wellcherish.texteditor.database.constants.databaseName
 import com.wellcherish.texteditor.database.dao.FileItemDao

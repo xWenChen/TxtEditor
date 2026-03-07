@@ -1,5 +1,6 @@
 package com.wellcherish.texteditor.utils
 
+import com.wellcherish.base.log.ZLog
 import com.wellcherish.texteditor.R
 import com.wellcherish.texteditor.config.ConfigManager
 import com.wellcherish.texteditor.config.DefaultConfig

@@ -1,5 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 配置方案1：现代日式二次元插画风 (Modern Anime) -->
+    <color name="anime_primary">#8ECAE6</color>
+    <color name="anime_primary_variant">#219EBC</color>
+
+    <color name="anime_secondary">#FFB7B2</color>
+    <color name="anime_accent">#FFB84C</color>
+
+    <color name="anime_background">#FDFCF0</color>
+    <color name="anime_surface">#FFFFFF</color>
+
+    <color name="anime_on_primary">#FFFFFF</color>
+    <color name="anime_on_background">#4A4E69</color>
+    <color name="anime_text_secondary">#9A8C98</color>
+
+    <!-- 配色方案2：活力彩虹渐变风 (Vibrant Rainbow) -->
+    <color name="rainbow_red">#FF6B6B</color>
+    <color name="rainbow_yellow">#FFD93D</color>
+    <color name="rainbow_green">#6BCB77</color>
+    <color name="rainbow_blue">#4D96FF</color>
+    <color name="rainbow_purple">#9B59B6</color>
+
+    <color name="rainbow_primary">#4D96FF</color>
+    <color name="rainbow_secondary">#6BCB77</color>
+
+    <color name="rainbow_bg_light">#F8F9FA</color>
+    <color name="rainbow_card_stroke">#E9ECEF</color>
+
+    <!-- 彩虹色 -->
+    <!-- 绯红 -->
+    <color name="rb_red">#FF595E</color>
+    <!-- 亮橙 -->
+    <color name="rb_orange">#FF924C</color>
+    <!-- 明黄 -->
+    <color name="rb_yellow">#FFCA3A</color>
+    <!-- 嫩绿 -->
+    <color name="rb_green">#8AC926</color>
+    <!-- 青色 -->
+    <color name="rb_cyan">#36C1D1</color>
+    <!-- 蔚蓝 -->
+    <color name="rb_blue">#1982C4</color>
+    <!-- 紫罗兰 -->
+    <color name="rb_purple">#6A4C93</color>za
+
     <color name="black">#FF000000</color>
     <color name="black_10">#1A000000</color>
     <color name="black_30">#4D000000</color>
@@ -23,8 +66,10 @@
     <!-- 极光灰 -->
     <color name="main_grey">#FFEAEAEF</color>
 
+    <color name="deep_green">#0ead69</color>
     <color name="light_green_500">#8BC34A</color>
     <color name="light_green_200">#C5E1A5</color>
+    <color name="light_orange_100">#FEC89A</color>
     <color name="light_orange_300">#FFB74D</color>
     <color name="light_orange_500">#FF9800</color>
     <color name="light_blue_100">#B3E5FC</color>
@@ -32,11 +77,22 @@
     <color name="light_blue_300">#4FC3F7</color>
     <color name="light_blue_500">#03A9F4</color>
 
+    <color name="light_pink_100">#FCE4EC</color>
+    <color name="hot_pink">#FF69B4</color>
+    <color name="deep_pink">#9E2B69</color>
+
     <color name="blue">#5BC0EB</color>
     <color name="yellow">#FDE74C</color>
     <color name="green">#9BC53D</color>
     <color name="red">#E55934</color>
     <color name="orange">#FA7921</color>
+    <color name="light_green">#b7f000</color>
+    <color name="light_blue">#00D9FF</color>
+    <color name="light_purple">#BC5CE3</color>
+    <color name="light_cyan">#00F5D4</color>
+    <color name="light_orange">#FFA500</color>
+    <color name="light_yellow">#fee440</color>
+    <color name="deep_yellow">#BD8B00</color>
 
     <color name="red_30">#4Dff0000</color>
     <color name="red_50">#80ff0000</color>

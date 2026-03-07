@@ -1,6 +1,6 @@
 package com.wellcherish.texteditor.config
 
-import com.wellcherish.texteditor.MainApplication
+import com.wellcherish.base.MainApplication
 import java.io.File
 
 /**

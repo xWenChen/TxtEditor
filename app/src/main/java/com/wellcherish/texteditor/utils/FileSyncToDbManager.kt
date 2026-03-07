@@ -1,5 +1,6 @@
 package com.wellcherish.texteditor.utils
 
+import com.wellcherish.base.log.ZLog
 import com.wellcherish.texteditor.database.bean.FileItem
 import com.wellcherish.texteditor.model.FileRepository
 import java.io.File

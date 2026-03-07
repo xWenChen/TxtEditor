@@ -44,6 +44,9 @@ android {
 
 dependencies {
 
+    implementation project(":DataSync")
+    implementation project(":Base")
+
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.3.0'
     implementation 'com.google.android.material:material:1.4.0'

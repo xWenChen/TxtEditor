@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_page">
+    android:background="@drawable/bg_app_page">
 
     <com.wellcherish.texteditor.ui.MainToolbar
         android:id="@+id/mainToolbar"
@@ -20,10 +20,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/padding_large"
-        android:paddingVertical="@dimen/padding_small"
+        android:paddingTop="@dimen/padding_middle"
+        android:paddingBottom="@dimen/padding_small"
         android:gravity="start"
-        android:textSize="@dimen/text_size_v4"
-        android:textColor="@color/black_50"
+        android:textSize="@dimen/text_size_v1"
+        android:textColor="@color/rb_red"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/mainToolbar"
@@ -34,7 +36,8 @@
         android:id="@+id/rv"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/padding_middle"
+        android:layout_marginHorizontal="@dimen/padding_middle"
+        android:layout_marginBottom="@dimen/padding_middle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTextCountTips"

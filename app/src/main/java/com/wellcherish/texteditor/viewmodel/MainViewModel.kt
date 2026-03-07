@@ -5,11 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.wellcherish.texteditor.bean.FileData
-import com.wellcherish.texteditor.database.bean.FileItem
 import com.wellcherish.texteditor.model.FileChangeType
 import com.wellcherish.texteditor.model.FileRepository
 import com.wellcherish.texteditor.utils.DeleteFileUtil
-import com.wellcherish.texteditor.utils.ZLog
+import com.wellcherish.base.log.ZLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

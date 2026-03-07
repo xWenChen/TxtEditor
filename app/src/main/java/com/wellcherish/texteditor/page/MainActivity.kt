@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.wellcherish.base.utils.StatusBarUtils
 import com.wellcherish.texteditor.R
 import com.wellcherish.texteditor.bean.FileData
 import com.wellcherish.texteditor.config.ConfigManager
@@ -18,6 +19,7 @@ import com.wellcherish.texteditor.model.FileEventBus
 import com.wellcherish.texteditor.ui.State
 import com.wellcherish.texteditor.utils.*
 import com.wellcherish.texteditor.viewmodel.MainViewModel
+import com.wellcherish.base.R as BaseR
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -36,6 +38,7 @@ class MainActivity : BaseActivity() {
             setContentView(this.root)
             binding = this
         }
+        StatusBarUtils.setStatusBarCustom(this, BaseR.color.rb_green.colorRes, false)
 
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.changeLoadingState(true)

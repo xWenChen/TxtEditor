@@ -20,6 +20,9 @@
     <dimen name="page_padding_large">32dp</dimen>
 
     <dimen name="text_size_v0">36sp</dimen>
+    <dimen name="text_size_32">32sp</dimen>
+    <dimen name="text_size_28">28sp</dimen>
+    <dimen name="text_size_20">20sp</dimen>
     <dimen name="text_size_v1">24sp</dimen>
     <dimen name="text_size_v2">18sp</dimen>
     <dimen name="text_size_v3">16sp</dimen>

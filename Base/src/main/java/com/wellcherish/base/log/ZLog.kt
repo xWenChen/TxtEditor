@@ -1,4 +1,4 @@
-package com.wellcherish.texteditor.utils
+package com.wellcherish.base.log
 
 import android.util.Log
 
