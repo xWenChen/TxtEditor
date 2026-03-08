@@ -11,8 +11,8 @@ import com.wellcherish.texteditor.bean.FileData
 import com.wellcherish.texteditor.databinding.TextFileItemBinding
 import com.wellcherish.base.log.ZLog
 import com.wellcherish.base.utils.DrawableUtils
+import com.wellcherish.base.utils.setNoDoubleClickListener
 import com.wellcherish.texteditor.utils.safeTitle
-import com.wellcherish.texteditor.utils.setNoDoubleClickListener
 
 class MainAdapter(
     private val noDoubleClick: (View, Int, FileData) -> Unit,

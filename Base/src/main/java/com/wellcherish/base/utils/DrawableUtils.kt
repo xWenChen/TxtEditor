@@ -21,23 +21,26 @@ object DrawableUtils {
 
     private val random = Random()
 
-    fun randomBg(): Drawable {
+    fun randomBg(
+        orientation: GradientDrawable.Orientation = GradientDrawable.Orientation.TL_BR,
+    ): Drawable {
         // 取 0 到 bgList.size - 1 的随机数。
         val startIndex = random.nextInt(bgList.size)
         var endIndex = random.nextInt(bgList.size)
         if (startIndex == endIndex) {
             endIndex = (startIndex + 1) % bgList.size
         }
-        return gradientBg(bgList[startIndex], bgList[endIndex])
+        return gradientBg(bgList[startIndex], bgList[endIndex], orientation)
     }
 
     fun gradientBg(
         startColor: Int,
         endColor: Int,
+        orientation: GradientDrawable.Orientation,
         radius: Int = R.dimen.padding_large.dimenRes,
     ): Drawable {
         val gradient = GradientDrawable(
-            GradientDrawable.Orientation.TL_BR,
+            orientation,
             intArrayOf(startColor, endColor)
         ).apply {
             shape = GradientDrawable.RECTANGLE

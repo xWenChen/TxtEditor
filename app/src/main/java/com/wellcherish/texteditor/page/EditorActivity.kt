@@ -7,6 +7,8 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.wellcherish.base.log.ZLog
+import com.wellcherish.base.utils.colorRes
+import com.wellcherish.base.utils.stringRes
 import com.wellcherish.texteditor.R
 import com.wellcherish.base.R as BaseR
 import com.wellcherish.texteditor.config.ConfigManager
@@ -101,9 +103,6 @@ class EditorActivity : BaseActivity() {
                 this,
                 onSaveClick = {
                     saveText()
-                },
-                onSettingClick = {
-
                 }
             )
         }

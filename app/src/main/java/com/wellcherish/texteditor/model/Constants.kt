@@ -44,3 +44,17 @@ enum class FileChangeType {
     MOVED,
     UNKNOWN
 }
+
+/**
+ * 设置页的设置项
+ * */
+enum class SettingType {
+    /**
+     * 数据迁移
+     * */
+    DATA_SYNC,
+    /**
+     * 关于页
+     * */
+    ABOUT,
+}

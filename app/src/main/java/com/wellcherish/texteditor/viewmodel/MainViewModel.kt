@@ -9,7 +9,7 @@ import com.wellcherish.texteditor.model.FileChangeType
 import com.wellcherish.texteditor.model.FileRepository
 import com.wellcherish.texteditor.utils.DeleteFileUtil
 import com.wellcherish.base.log.ZLog
-import com.wellcherish.texteditor.page.EditorActivity
+import com.wellcherish.texteditor.bean.FileDataResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -22,7 +22,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * 是否是删除中的状态，如果是，则每个item展示删除按钮。
      * */
     var isDeleting = false
-    val dataListLiveData = MutableLiveData<List<FileData>>()
+    val dataListLiveData = MutableLiveData<FileDataResult>()
     private val fileRepository = FileRepository
 
     val onFileChanged = run@{ _: String, changeType: FileChangeType ->
@@ -43,13 +43,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
         viewModelScope.launch(Dispatchers.IO) {
             this@MainViewModel.isDeleting = isDeleting
-            val list = dataListLiveData.value?.map { it.copy(showDelete = isDeleting) }
-            dataListLiveData.postValue(list)
+            val list = dataListLiveData.value?.dataList?.map { it.copy(showDelete = isDeleting) }
+            dataListLiveData.postValue(FileDataResult(list, false))
         }
     }
 
     fun deleteItem(position: Int, data: FileData) {
-        val list = dataListLiveData.value
+        val list = dataListLiveData.value?.dataList
         if (list.isNullOrEmpty()) {
             return
         }
@@ -66,7 +66,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 newList.add(item.copy())
             }
-            dataListLiveData.postValue(newList)
+            dataListLiveData.postValue(FileDataResult(newList, false))
         }
     }
 
@@ -89,7 +89,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 ZLog.e(TAG, it)
             }.getOrNull()
         }
-        dataListLiveData.postValue(files)
+        dataListLiveData.postValue(FileDataResult(files, true))
     }
 
     companion object {

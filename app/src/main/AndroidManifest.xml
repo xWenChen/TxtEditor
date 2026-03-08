@@ -22,9 +22,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".page.SettingActivity"
+            android:exported="false" />
+        <activity
             android:name=".page.EditorActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
     </application>
 
 </manifest>

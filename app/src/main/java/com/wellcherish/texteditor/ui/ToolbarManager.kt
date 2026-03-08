@@ -6,7 +6,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.wellcherish.base.R
 import com.wellcherish.base.utils.StatusBarUtils
-import com.wellcherish.texteditor.utils.colorRes
+import com.wellcherish.base.utils.colorRes
 
 class ToolbarManager(
     activity: AppCompatActivity,

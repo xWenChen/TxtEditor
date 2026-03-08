@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
+import com.wellcherish.base.utils.setNoDoubleClickListener
 import com.wellcherish.texteditor.databinding.MainToolbarBinding
-import com.wellcherish.texteditor.utils.setNoDoubleClickListener
 
 class MainToolbar @JvmOverloads constructor(
     context: Context,
@@ -19,6 +19,11 @@ class MainToolbar @JvmOverloads constructor(
 
     init {
         binding = MainToolbarBinding.inflate(LayoutInflater.from(context), this ,true)
+    }
+
+    fun setShowTitle(isShow: Boolean) {
+        binding.mainToolbar.isVisible = !isShow
+        binding.tvTitle.isVisible = isShow
     }
 
     fun setTitle(title: CharSequence?) {

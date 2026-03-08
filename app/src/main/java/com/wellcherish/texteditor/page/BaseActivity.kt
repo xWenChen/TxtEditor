@@ -4,6 +4,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.wellcherish.texteditor.ui.MainToolbar
 import com.wellcherish.texteditor.ui.ToolbarManager
+import com.wellcherish.texteditor.utils.PageUtils
 
 open class BaseActivity : AppCompatActivity() {
     protected var toolbarManager: ToolbarManager? = null
@@ -16,7 +17,7 @@ open class BaseActivity : AppCompatActivity() {
     protected fun initToolbar(
         toolbar: MainToolbar?,
         onSaveClick: ((View) -> Unit)? = null,
-        onSettingClick: ((View) -> Unit)? = null,
+        onSettingClick: ((View) -> Unit)? = { PageUtils.jumpSettingPage(it.context) },
     ) {
         toolbar ?: return
         toolbarManager = ToolbarManager(

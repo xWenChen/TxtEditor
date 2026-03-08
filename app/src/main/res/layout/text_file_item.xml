@@ -10,8 +10,7 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/bg_text_file_item">
+        android:orientation="vertical" >
 
         <TextView
             android:id="@+id/tv_title"

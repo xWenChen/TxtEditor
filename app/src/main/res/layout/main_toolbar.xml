@@ -54,4 +54,27 @@
 
     </LinearLayout>
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/mainToolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="ivAppName,llButton"
+        />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_middle"
+        android:gravity="center"
+        android:textSize="@dimen/text_size_v1"
+        android:textColor="@color/white"
+        android:text="@string/setting"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

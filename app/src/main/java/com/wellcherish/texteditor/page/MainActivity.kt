@@ -9,7 +9,8 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.wellcherish.base.utils.StatusBarUtils
+import com.wellcherish.base.utils.setNoDoubleClickListener
+import com.wellcherish.base.utils.stringRes
 import com.wellcherish.texteditor.R
 import com.wellcherish.texteditor.bean.FileData
 import com.wellcherish.texteditor.config.ConfigManager
@@ -19,7 +20,6 @@ import com.wellcherish.texteditor.model.FileEventBus
 import com.wellcherish.texteditor.ui.State
 import com.wellcherish.texteditor.utils.*
 import com.wellcherish.texteditor.viewmodel.MainViewModel
-import com.wellcherish.base.R as BaseR
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -75,12 +75,7 @@ class MainActivity : BaseActivity() {
         }
 
         mBinding.mainToolbar.apply {
-            initToolbar(
-                this,
-                onSettingClick = {
-
-                }
-            )
+            initToolbar(this)
             setShowSave(false)
         }
 
@@ -111,14 +106,17 @@ class MainActivity : BaseActivity() {
         }
 
         viewModel.dataListLiveData.observe(this) {
-            binding?.tvTextCountTips?.text = getFileCountHint(it?.size ?: 0)
-            if (it.isNullOrEmpty()) {
+            val list = it.dataList
+            binding?.tvTextCountTips?.text = getFileCountHint(list?.size ?: 0)
+            if (list.isNullOrEmpty()) {
                 viewModel.showEmpty.value = true
                 return@observe
             }
             viewModel.showEmpty.value = false
-            adapter?.submitList(it) {
-                binding?.rv?.smoothScrollToPosition(0)
+            adapter?.submitList(list) {
+                if (it.needScroll) {
+                    binding?.rv?.smoothScrollToPosition(0)
+                }
             }
         }
     }

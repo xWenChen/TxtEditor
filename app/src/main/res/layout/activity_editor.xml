@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
+    android:background="@drawable/bg_app_page"
     android:orientation="vertical" >
 
     <com.wellcherish.texteditor.ui.MainToolbar
