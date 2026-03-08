@@ -41,15 +41,6 @@ class EditorActivity : BaseActivity() {
         initData()
     }
 
-    override fun onStop() {
-        super.onStop()
-        // 退出页面时，尝试保存下。
-        lifecycleScope.launch(Dispatchers.autoSave) {
-            // 点击返回按钮时，先进行保存，再响应返回按钮的点击操作。
-            saveText()
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         viewModel.onDestroy()
@@ -90,9 +81,11 @@ class EditorActivity : BaseActivity() {
             override fun handleOnBackPressed() {
                 lifecycleScope.launch(Dispatchers.autoSave) {
                     // 点击返回按钮时，先进行保存，再响应返回按钮的点击操作。
-                    //saveText()
+                    ZLog.d(TAG, "back saveText")
+                    saveText()
                     withContext(Dispatchers.Main) {
                         // 保存成功，退出页面。
+                        ZLog.d(TAG, "finish EditorActivity")
                         this@EditorActivity.finish()
                     }
                 }
@@ -189,7 +182,7 @@ class EditorActivity : BaseActivity() {
     }
 
     private fun initData() {
-        //viewModel.startAutoSave(::getContentTitle, ::getContent, ::onSavedFail)
+        viewModel.startAutoSave(::getContentTitle, ::getContent, ::onSavedFail)
     }
 
     private fun getContentTitle(): String? {

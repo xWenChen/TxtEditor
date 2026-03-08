@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/padding_small"
             android:src="@drawable/ic_save"
-            app:tint="@color/white" />
+            app:tint="@color/icon_tint" />
 
         <ImageView
             android:id="@+id/ivSetting"
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/padding_small"
             android:src="@drawable/ic_setting"
-            app:tint="@color/white" />
+            app:tint="@color/icon_tint" />
 
     </LinearLayout>
 

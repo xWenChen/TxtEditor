@@ -4,6 +4,9 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.wellcherish.base.R
+import com.wellcherish.base.utils.StatusBarUtils
+import com.wellcherish.texteditor.utils.colorRes
 
 class ToolbarManager(
     activity: AppCompatActivity,
@@ -13,6 +16,7 @@ class ToolbarManager(
 ) : DefaultLifecycleObserver {
 
     init {
+        StatusBarUtils.setStatusBarCustom(activity, R.color.rb_green.colorRes, false)
         activity.lifecycle.addObserver(this)
         toolbar?.apply {
             setSaveClickListener(onSaveClick)

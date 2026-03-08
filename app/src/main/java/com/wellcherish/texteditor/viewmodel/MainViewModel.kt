@@ -9,6 +9,7 @@ import com.wellcherish.texteditor.model.FileChangeType
 import com.wellcherish.texteditor.model.FileRepository
 import com.wellcherish.texteditor.utils.DeleteFileUtil
 import com.wellcherish.base.log.ZLog
+import com.wellcherish.texteditor.page.EditorActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,10 +26,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val fileRepository = FileRepository
 
     val onFileChanged = run@{ _: String, changeType: FileChangeType ->
+        ZLog.d(TAG, "main vm onFileChanged, changeType=$changeType")
         if (changeType == FileChangeType.UNKNOWN) {
             return@run
         }
         viewModelScope.launch(Dispatchers.IO) {
+            ZLog.d(TAG, "main vm onFileChanged, loadData, changeType=$changeType")
             // 重新加载数据
             loadData()
         }

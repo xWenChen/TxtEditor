@@ -38,7 +38,6 @@ class MainActivity : BaseActivity() {
             setContentView(this.root)
             binding = this
         }
-        StatusBarUtils.setStatusBarCustom(this, BaseR.color.rb_green.colorRes, false)
 
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.changeLoadingState(true)
@@ -118,7 +117,9 @@ class MainActivity : BaseActivity() {
                 return@observe
             }
             viewModel.showEmpty.value = false
-            adapter?.submitList(it)
+            adapter?.submitList(it) {
+                binding?.rv?.smoothScrollToPosition(0)
+            }
         }
     }
 

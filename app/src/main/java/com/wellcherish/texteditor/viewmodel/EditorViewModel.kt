@@ -88,19 +88,32 @@ class EditorViewModel(application: Application) : AndroidViewModel(application) 
             val finalFile = filePath?.let { File(it) } ?: return
             val oldContent = finalFile.content()
             if (oldContent == newText) {
+                ZLog.d(TAG, "fileContentSame, fileChangeType=$fileChangeType")
+                // 通知文件发生变更。
+                if (fileChangeType == FileChangeType.ADDED) {
+                    FileEventBus.notifyFileChanged(finalFile.absolutePath, FileChangeType.ADDED)
+                }
+                // 重置状态。
+                resetFileChangeType()
                 return@runCatching
             }
             FileWriter(finalFile).use { it.write(newText) }
             changeContentSaveState(SaveState.SAVED)
             // 通知文件发生变更。
             FileEventBus.notifyFileChanged(finalFile.absolutePath, fileChangeType)
+            ZLog.d(TAG, "FileEventBus.notifyFileChanged, fileChangeType=$fileChangeType")
             // 保存成功，重置状态。
-            fileChangeType = FileChangeType.UNKNOWN
+            resetFileChangeType()
         }.onFailure {
             ZLog.e(TAG, it)
             changeContentSaveState(oldState)
+            resetFileChangeType()
             onFailed()
         }
+    }
+
+    private fun resetFileChangeType() {
+        fileChangeType = FileChangeType.UNKNOWN
     }
 
     /**
