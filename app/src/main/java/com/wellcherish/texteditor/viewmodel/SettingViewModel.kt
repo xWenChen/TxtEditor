@@ -45,6 +45,9 @@ class SettingViewModel(application: Application) : AndroidViewModel(application)
 
     private fun getDataList(): List<SettingItem> {
         return mutableListOf<SettingItem>().apply {
+            add(SettingItem(SettingType.APP_CONFIG, R.string.app_config.stringRes) {_, position, data ->
+                // todo：跳转页面
+            })
             add(SettingItem(SettingType.DATA_SYNC, R.string.trans_data.stringRes) {_, position, data ->
                 // todo：跳转页面
             })

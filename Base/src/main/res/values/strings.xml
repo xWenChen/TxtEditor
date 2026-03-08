@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="data_trans_channel_name">数据迁移通道</string>
+    <string name="data_trans_channel_desc">用于显示 WorkManager 数据迁移后台任务的进度</string>
+    <string name="data_in_trans">正在迁移</string>
+</resources>

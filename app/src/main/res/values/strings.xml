@@ -12,6 +12,7 @@
     <string name="data_syncing_tips">数据同步中，请稍等。。。</string>
     <string name="delete_file">刪除文件</string>
     <string name="setting">设置</string>
+    <string name="app_config">应用配置信息</string>
     <string name="trans_data">迁移数据</string>
     <string name="about">关于和帮助</string>
 </resources>

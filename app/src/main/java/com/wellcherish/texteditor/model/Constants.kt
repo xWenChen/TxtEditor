@@ -50,6 +50,10 @@ enum class FileChangeType {
  * */
 enum class SettingType {
     /**
+     * 应用配置信息
+     * */
+    APP_CONFIG,
+    /**
      * 数据迁移
      * */
     DATA_SYNC,
