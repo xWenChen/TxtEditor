@@ -1,28 +1,18 @@
 package com.wellcherish.datasync.wifi
 
-import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.IntentFilter
-import android.content.pm.PackageManager
-import android.net.wifi.WifiManager
 import android.net.wifi.p2p.WifiP2pDeviceList
 import android.net.wifi.p2p.WifiP2pManager
 import android.os.Looper
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.MutableLiveData
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.wellcherish.base.log.ZLog
+import com.wellcherish.datasync.ISyncManager
+import com.wellcherish.datasync.constants.FindDevicesResult
 
 /**
  * 使用 wifi p2p 技术进行数据同步的类。详细教程见：https://developer.android.com/develop/connectivity/wifi/wifip2p?hl=zh-cn
- *
- * 官方的demo代码：https://android.googlesource.com/platform/development/+/refs/heads/main/samples/WiFiDirectDemo/src/com/example/android/wifidirect/WiFiDirectActivity.java
  *
  * 对于以 Android 13（API 级别 33）及更高版本为目标平台的应用，
  * discoverPeers() 和 connect() 都需要 android.permission.NEARBY_WIFI_DEVICES 权限。
@@ -33,12 +23,12 @@ import com.wellcherish.base.log.ZLog
  * - discoverPeers()
  * - discoverServices()
  * - requestPeers()
- *
- * -
  * */
-class WifiDataSyncManager(private var activity: AppCompatActivity?): DefaultLifecycleObserver {
+class WifiDataSyncManager(private var context: Context?) : ISyncManager {
 
-    private var manager: WifiP2pManager? = null
+    private val manager: WifiP2pManager? by lazy {
+        context?.getSystemService(Context.WIFI_P2P_SERVICE) as? WifiP2pManager
+    }
 
     /**
      * Channel用于将应用连接到 Wi-Fi P2P 框架
@@ -46,93 +36,77 @@ class WifiDataSyncManager(private var activity: AppCompatActivity?): DefaultLife
     private var channel: WifiP2pManager.Channel? = null
     private var listener: WifiP2pManager.ChannelListener? = null
     private var receiver: BroadcastReceiver? = null
-    var isWifiP2pEnabled = MutableLiveData(false)
-    var retryChannel = false
 
     /**
-     * onCreate时调用该方法。
+     * 发现设备的结果回调，这只是开启扫描，并不是拿到最终的结果。发现设备的结果通过广播回传，需要接收广播信号进行请求。
      * */
-    fun init(lifecycle: Lifecycle): Boolean {
-        if (!initP2p()) {
-            return false
-        }
-        lifecycle.addObserver(this)
-        return true
-    }
-
-    private fun initP2p(): Boolean {
-        // Device capability definition check
-        if (activity?.packageManager?.hasSystemFeature(PackageManager.FEATURE_WIFI_DIRECT) != true) {
-            ZLog.e(TAG, "Wi-Fi Direct is not supported by this device.")
-            return false
-        }
-        val wifiManager = activity?.applicationContext?.getSystemService(Context.WIFI_SERVICE) as? WifiManager
-        if (wifiManager == null) {
-            ZLog.e(TAG, "Cannot get Wi-Fi system service.")
-            return false
-        }
-        if (!wifiManager.isP2pSupported) {
-            ZLog.e(TAG, "Wi-Fi Direct is not supported by the hardware or Wi-Fi is off.")
-            return false
-        }
-        manager = activity?.getSystemService(Context.WIFI_P2P_SERVICE) as? WifiP2pManager
-        if (manager == null) {
-            ZLog.e(TAG, "Cannot get Wi-Fi Direct system service.")
-            return false
-        }
-        channel = manager?.initialize(activity, Looper.getMainLooper(), null);
-        if (channel == null) {
-            ZLog.e(TAG, "Cannot initialize Wi-Fi Direct.")
-            return false
-        }
-        return true
-    }
-
-    override fun onResume(owner: LifecycleOwner) {
-        super.onResume(owner)
-        channel?.let { channel ->
-            receiver = WiFiDirectBroadcastReceiver(manager, channel, ::updateDeviceList, ::updateWifiP2PEnableState)
-            // 注册广播监听
-            receiver?.also { activity?.registerReceiver(it, intentFilter) }
-        }
-    }
-
-    override fun onPause(owner: LifecycleOwner) {
-        super.onPause(owner)
-        receiver?.also { activity?.unregisterReceiver(it) }
-    }
-
-    override fun onDestroy(owner: LifecycleOwner) {
-        super.onDestroy(owner)
-        activity = null
-        channel = null
-        listener = null
-    }
+    private var onFindDeviceFinish: ((FindDevicesResult) -> Unit)? = null
 
     /**
-     * 处理配对设备的结果回调。
+     * 获取配对设备的结果回调。
      * */
-    private fun updateDeviceList(peersList: WifiP2pDeviceList?) {
+    private var onGetDeviceList: ((WifiP2pDeviceList?) -> Unit)? = { peers ->
         // Handle peers list
     }
 
     /**
-     * 处理Wifi P2P enable状态变更。
+     * 在Activity的onCreate方法中调用。
      * */
-    private fun updateWifiP2PEnableState(enable: Boolean) {
-        isWifiP2pEnabled.postValue(enable)
-        if (!enable) {
-            // todo activity.resetData()
+    override fun onCreate(owner: LifecycleOwner) {
+        super.onCreate(owner)
+        val mContext = context
+        if (mContext == null) {
+            ZLog.w(TAG, "init, context is null.")
+            return
+        }
+        val mChannel = manager?.initialize(mContext, Looper.getMainLooper(), null)
+        val mManager = manager
+        if (mManager == null || mChannel == null) {
+            ZLog.w(TAG, "init, manager or channel is null.")
+            return
+        }
+        channel = mChannel
+        receiver = WiFiDirectBroadcastReceiver(mManager, mChannel, onGetDeviceList) { wifiP2PEnabled ->
+
         }
     }
 
-    fun startDataSync() {
-        val activity = activity ?: return
-        val syncRequest = OneTimeWorkRequestBuilder<FileTransferWorker>()
-            //.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST) // 关键点：开启加急模式
-            .build()
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
+        receiver?.also { context?.registerReceiver(it, intentFilter) }
+    }
 
-        WorkManager.getInstance(activity).enqueue(syncRequest)
+    override fun onPause(owner: LifecycleOwner) {
+        super.onPause(owner)
+        receiver?.also { context?.unregisterReceiver(it) }
+    }
+
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
+        context = null
+        channel = null
+        listener = null
+        onFindDeviceFinish = null
+    }
+
+    override fun start() {
+        val onFindDeviceFinish = onFindDeviceFinish ?: return
+        // 调用 discoverPeers() 方法开始寻找附近的设备。这只是开启扫描，结果会通过广播返回。
+        manager?.discoverPeers(channel, object : WifiP2pManager.ActionListener {
+            override fun onSuccess() {
+                // 搜索配对列表成功后，结果通过广播回传。
+                onFindDeviceFinish(FindDevicesResult.Success())
+            }
+
+            override fun onFailure(reasonCode: Int) {
+                onFindDeviceFinish((FindDevicesResult.Error(reasonCode)))
+            }
+        })
+    }
+
+    override fun onFindDeviceFinish(callback: ((FindDevicesResult) -> Unit)?): ISyncManager {
+        this.onFindDeviceFinish = callback
+        return this
     }
 
     companion object {
@@ -143,22 +117,6 @@ class WifiDataSyncManager(private var activity: AppCompatActivity?): DefaultLife
             addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)
             addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)
             addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION)
-        }
-
-        /**
-         * WIFI P2P 需要检查位置权限。
-         * */
-        fun AppCompatActivity.checkWifiP2PPermission(onResult: (Boolean) -> Unit) {
-            val permission = Manifest.permission.ACCESS_FINE_LOCATION
-            if (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
-                // 已有权限
-                onResult(true)
-                return
-            }
-            // 申请
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                onResult(isGranted)
-            }.launch(permission)
         }
     }
 }

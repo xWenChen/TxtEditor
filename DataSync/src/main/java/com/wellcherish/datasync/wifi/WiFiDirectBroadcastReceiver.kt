@@ -7,17 +7,8 @@ import android.net.wifi.p2p.WifiP2pDeviceList
 import android.net.wifi.p2p.WifiP2pManager
 
 /**
- * Wi-Fi p2p 事件的广播接收器.
- *
- * - WIFI_P2P_STATE_CHANGED_ACTION: 指示是否启用 WLAN 直连。
- * - WIFI_P2P_PEERS_CHANGED_ACTION: 指示可用的对等设备列表已更改。
- * - WIFI_P2P_CONNECTION_CHANGED_ACTION: 指示 Wi-Fi Direct 连接的状态已更改。从 Android 10 开始，这不是固定的(是非粘性 intent)。
- *    如果应用依赖于在注册时接收这些广播（因为其之前一直是固定的），请在初始化时使用适当的 get 方法获取信息。
- *    应用可以使用 requestConnectionInfo()、requestNetworkInfo() 或 requestGroupInfo() 检索当前连接信息。
- * - WIFI_P2P_THIS_DEVICE_CHANGED_ACTION: 指示此设备的配置详细信息已更改。从 Android 10 开始，这不是固定的(是非粘性 intent)。
- *    如果应用依赖于在注册时接收这些广播（因为其之前一直是固定的），请在初始化时使用适当的 get 方法获取信息。
- *    应用可以使用 requestDeviceInfo() 检索当前连接信息。
- */
+* Wi-Fi p2p 事件的广播接收器.
+*/
 class WiFiDirectBroadcastReceiver(
     private val manager: WifiP2pManager?,
     private val channel: WifiP2pManager.Channel,
@@ -27,7 +18,7 @@ class WiFiDirectBroadcastReceiver(
    override fun onReceive(context: Context, intent: Intent) {
        when (intent.action) {
            WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION -> {
-               // 指示是否启用 WLAN 直连。检查wifi是否可用。
+               // 检查wifi是否可用。
                checkWifiP2PEnable(intent)
            }
            WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION -> {
@@ -47,7 +38,15 @@ class WiFiDirectBroadcastReceiver(
 
     private fun checkWifiP2PEnable(intent: Intent) {
         val state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1)
-        val enable = state == WifiP2pManager.WIFI_P2P_STATE_ENABLED
-        onWifiP2PStateChanged(enable)
+        when (state) {
+            WifiP2pManager.WIFI_P2P_STATE_ENABLED -> {
+                // Wifi P2P 可用。
+                onWifiP2PStateChanged(true)
+            }
+            else -> {
+                // Wi-Fi P2P 不可用。
+                onWifiP2PStateChanged(false)
+            }
+        }
     }
 }
