@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Android Wi-Fi P2P 高性能传输框架技术文档与接入指南</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 15mm;
+            @bottom-right {
+                content: counter(page) " / " counter(pages);
+                font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+                font-size: 9pt;
+                color: #8892b0;
+            }
+            @bottom-left {
+                content: "Android Wi-Fi P2P 技术白皮书";
+                font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+                font-size: 9pt;
+                color: #8892b0;
+            }
+        }
+        
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.6;
+            color: #2c3e50;
+            background-color: #ffffff;
+        }
+
+        /* Cover Page Styling */
+        .cover-page {
+            page-break-after: always;
+            height: 100%;
+            padding-top: 40mm;
+            position: relative;
+        }
+        
+        .cover-accent {
+            position: absolute;
+            top: -18mm;
+            left: -15mm;
+            width: 10mm;
+            height: 297mm;
+            background-color: #5c7cfa;
+        }
+
+        .cover-title {
+            font-size: 28pt;
+            font-weight: 800;
+            color: #1a1b2f;
+            line-height: 1.2;
+            margin-bottom: 5mm;
+            letter-spacing: -0.5px;
+        }
+
+        .cover-subtitle {
+            font-size: 14pt;
+            font-weight: 400;
+            color: #5c7cfa;
+            margin-bottom: 25mm;
+        }
+
+        .cover-meta {
+            margin-top: 50mm;
+            border-top: 1px solid #e9ecef;
+            padding-top: 10mm;
+        }
+
+        .meta-item {
+            font-size: 10pt;
+            color: #495057;
+            margin-bottom: 3mm;
+        }
+        
+        .meta-label {
+            font-weight: bold;
+            color: #868e96;
+            display: inline-block;
+            width: 80px;
+        }
+
+        /* Global Typography & Elements */
+        h1, h2, h3, h4 {
+            color: #1a1b2f;
+            font-weight: 700;
+            page-break-after: avoid;
+        }
+
+        h1 {
+            font-size: 20pt;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #5c7cfa;
+            padding-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 14pt;
+            margin-top: 30px;
+            margin-bottom: 12px;
+            border-left: 4px solid #5c7cfa;
+            padding-left: 10px;
+            background-color: #f8f9fa;
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+
+        h3 {
+            font-size: 11.5pt;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            color: #364fc7;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-top: 0;
+            margin-bottom: 12px;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            page-break-inside: avoid;
+            font-size: 9.5pt;
+        }
+
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #364fc7;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        /* Code Blocks */
+        pre {
+            background-color: #1e1e24;
+            color: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 8.5pt;
+            line-height: 1.5;
+            overflow: hidden;
+            margin: 12px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            page-break-inside: avoid;
+            border-left: 4px solid #748ffc;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f1f3f5;
+            color: #d6336c;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 9pt;
+        }
+
+        pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+            border-radius: 0;
+            font-size: inherit;
+        }
+
+        /* Callouts / Alerts */
+        .callout {
+            background-color: #edf2ff;
+            border-left: 4px solid #4c6ef5;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+            page-break-inside: avoid;
+        }
+
+        .callout-title {
+            font-weight: bold;
+            color: #364fc7;
+            margin-bottom: 4px;
+            font-size: 10pt;
+        }
+        
+        .callout.warning {
+            background-color: #fff9db;
+            border-left: 4px solid #fcc419;
+        }
+        .callout.warning .callout-title {
+            color: #943a00;
+        }
+
+        /* Diagram Mockups via pure CSS / Tables */
+        .diagram-container {
+            border: 1px solid #e9ecef;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        
+        .diagram-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 9.5pt;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .flowchart {
+            display: block;
+            margin: 0 auto;
+            font-family: monospace;
+            font-size: 9pt;
+            line-height: 1.4;
+            color: #212529;
+            text-align: left;
+            background: #ffffff;
+            padding: 10px;
+            border: 1px dashed #ced4da;
+        }
+
+        /* Math Styling */
+        .math {
+            font-family: 'Times New Roman', Times, serif;
+            font-style: italic;
+            font-weight: bold;
+            color: #2b6cb0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cover Page -->
+    <div class="cover-page">
+        <div class="cover-accent"></div>
+        <div class="cover-title">Android Wi-Fi P2P 高性能传输框架<br>技术白皮书与落地接入指南</div>
+        <div class="cover-subtitle">基于 leavesCZY/WifiP2P 深度演进的 Kotlin 协程线性化异步架构方案</div>
+        
+        <div class="cover-meta">
+            <div class="meta-item"><span class="meta-label">文档版本</span>v1.0.0</div>
+            <div class="meta-item"><span class="meta-label">适用架构</span>Android API 21+ (Kotlin Coroutines)</div>
+            <div class="meta-item"><span class="meta-label">发布日期</span>2026年5月</div>
+            <div class="meta-item"><span class="meta-label">秘密级别</span>公开</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <h1>一、概述与方案设计前提</h1>
+    <p>Wi-Fi P2P（也被称为 Wi-Fi Direct）允许具备相应硬件支持的 Android 设备通过点对点直连技术进行高速数据通信，而无需依赖任何中间局域网无线路由。针对开源项目 <code>leavesCZY/WifiP2P</code> 的设计架构，本文档将其传统的基于 BroadcastReceiver 回调、异步 Listener 嵌套以及传统 Java Socket 的阻塞式 I/O 逻辑，全面重隔升级为基于 <b>Kotlin 协程（Coroutines）与挂起函数（Suspend Functions）</b> 的现代化线性架构。该方案能够彻底消除深度回调地狱，在上层提供顺序直观、健壮性极强的 API，完美支持高可靠性的文件夹/文件流传输，并配备实时的速度与进度双向反馈体系。</p>
+
+    <h2>1.1 环境前提与权限声明</h2>
+    <p>要成功启动 Wi-Fi P2P 功能，Android 客户端设备必须在 <code>AndroidManifest.xml</code> 中声明以下完整的静态权限。依据 Android 系统的最新安全模型（特别是 API 33+），位置权限与附近的设备扫描权限属于运行时强校验权限，必须在运行时引导用户授予：</p>
+
+    <pre><code>&lt;!-- 基础网络状态与 Wi-Fi 硬件控制权限 --&gt;
+&lt;uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /&gt;
+&lt;uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /&gt;
+&lt;uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" /&gt;
+&lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+&lt;uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;
+
+&lt;!-- Android 13 以前发现设备需要精确地理位置权限 --&gt;
+&lt;uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /&gt;
+
+&lt;!-- Android 13 (API 33) 及以上所需附近设备发现权限 --&gt;
+&lt;uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" 
+                 android:usesPermissionFlags="neverForLocation" /&gt;</code></pre>
+
+    <h2>1.2 运行时状态与权限级联校验</h2>
+    <p>在发起任何 P2P 扫描或建立连接操作前，必须按顺序执行严格的组合级联校验：检查底层硬核 Wi-Fi 开关状态、定位服务开关、系统版本特定的运行时权限。以下为框架层封装的统一挂起检查函数：</p>
+
+    <pre><code>import android.content.Context
+import android.content.pm.PackageManager
+import android.net.wifi.WifiManager
+import android.location.LocationManager
+import android.os.Build
+import androidx.core.content.ContextCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+sealed class ValidateResult {
+    object Success : ValidateResult()
+    data class Failure(val reason: String) : ValidateResult()
+}
+
+suspend fun verifyP2PEnvironment(context: Context): ValidateResult = withContext(Dispatchers.Default) {
+    // 1. 检查物理 Wi-Fi 是否开启
+    val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
+    if (wifiManager == null || !wifiManager.isWifiEnabled) {
+        return@withContext ValidateResult.Failure("ERROR_WIFI_DISABLED: 请先开启设备的Wi-Fi硬件开关。")
+    }
+
+    // 2. 运行时权限动态校验
+    if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.TIRAMISU) {
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.NEARBY_WIFI_DEVICES) 
+            != PackageManager.PERMISSION_GRANTED) {
+            return@withContext ValidateResult.Failure("ERROR_PERMISSION_DENIED: 缺少 NEARBY_WIFI_DEVICES 权限。")
+        }
+    } else {
+        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) 
+            != PackageManager.PERMISSION_GRANTED) {
+            return@withContext ValidateResult.Failure("ERROR_PERMISSION_DENIED: 缺少 ACCESS_FINE_LOCATION 权限。")
+        }
+        // Android 13 以下部分厂商强制要求开启定位服务才能扫描 P2P 节点
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+        val isGpsEnabled = locationManager?.isProviderEnabled(LocationManager.GPS_PROVIDER) == true
+        val isNetworkEnabled = locationManager?.isProviderEnabled(LocationManager.NETWORK_PROVIDER) == true
+        if (!isGpsEnabled && !isNetworkEnabled) {
+            return@withContext ValidateResult.Failure("ERROR_LOCATION_DISABLED: 必须开启系统定位服务才能发现附近 P2P 设备。")
+        }
+    }
+    return@withContext ValidateResult.Success
+}</code></pre>
+
+    <h1>二、Wi-Fi P2P 全生命周期状态模型与拓扑演进</h1>
+    <p>Android 系统内置的 Wi-Fi P2P 状态完全由不可控的系统级广播进行驱动。为了完成无缝接入，框架层将其统一收拢至 <code>StateFlow</code> 中进行统一建模。</p>
+
+    <h2>2.1 系统四大核心广播状态映射</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>系统原始广播 Action</th>
+                <th>框架映射状态</th>
+                <th>业务核心含义</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>WIFI_P2P_STATE_CHANGED_ACTION</code></td>
+                <td><code>P2pStatus.Enabled / Disabled</code></td>
+                <td>表明当前设备的 Wi-Fi P2P 硬件功能是否可用。</td>
+            </tr>
+            <tr>
+                <td><code>WIFI_P2P_PEERS_CHANGED_ACTION</code></td>
+                <td>触发 <code>requestPeers()</code></td>
+                <td>附近可用的对等节点设备列表发生增减变动。</td>
+            </tr>
+            <tr>
+                <td><code>WIFI_P2P_CONNECTION_CHANGED_ACTION</code></td>
+                <td><code>P2pStatus.Connected / Disconnected</code></td>
+                <td>连接状态骤变，可提取出当前是群主(GO)还是组员(GC)，并能获取群主IP。</td>
+            </tr>
+            <tr>
+                <td><code>WIFI_P2P_THIS_DEVICE_CHANGED_ACTION</code></td>
+                <td>更新本机配置缓存</td>
+                <td>本机的设备网络信息（如MAC地址、设备名、持久化角色）发生变化。</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="callout warning">
+        <div class="callout-title">核心闭坑指南：MAC地址隐藏保护</div>
+        <p>自 Android 10+ 起，出于用户隐私和防追踪保护，系统在广播返回的 <code>WifiP2pDevice</code> 结构体中，会将本地及远端对等节点的 <code>deviceAddress</code>（MAC地址）字段部分抹除或重置为随机伪造 MAC。因此，框架层严禁依赖该 MAC 地址做持久化唯一标识。推荐在握手阶段由 TCP Socket 通道自传生成的 <code>UUID</code> 作为逻辑对端节点的唯一 Key。</p>
+    </div>
+
+    <h2>2.2 核心全拓扑生命周期交互流程图</h2>
+    <p>以下展示了从权限检查、设备发现、双向连接、TCP握手，直到大文件断点/流式传输与垃圾脏数据清理的严密全生命周期闭环：</p>
+
+    <div class="diagram-container">
+        <div class="diagram-title">图1：Wi-Fi P2P 线性协程全链路拓扑流程图</div>
+        <pre class="flowchart">
+[发起端 / Client]                                           [接收端 / Server]
+       │                                                           │
+       ├─► 1. 级联校验环境与权限 (verifyP2PEnvironment)              │
+       ├─► 2. 启动 P2P 设备发现 (discoverPeersSuspend)               │
+       │     └─► 监听到对端设备列表变化 ──┐                         │
+       │                                 ▼                         │
+       ├─► 3. 选定目标发起连接 (connectSuspend)                      │
+       │                                                           │
+       │ ══════════════════ Android P2P 组网成功 ═════════════════ │
+       │                                                           │
+       ├─► 4. 监听到 WIFI_P2P_CONNECTION_CHANGED_ACTION 广播 ◄─────┤
+       │      解析：获取到群组拓扑信息 (WifiP2PInfo)                │
+       │                                                           │
+       │      [GC: 客户端角色]                             [GO: 组主服务端角色]
+       │      已知群主 IP ──┐                                      │
+       │                    ▼                                      │
+       ├───────────► 5. 建立 TCP 套接字连接 (Port: 8899) ─────────►│
+       │                                                           │
+       │ ══════════════════ TCP 双向高速流通道就绪 ════════════════ │
+       │                                                           │
+       ├───────────► 6. 发送元数据 (包含总大小、相对路径) ─────────►│
+       │                                                           │
+       ├───────────► 7. 循环高速流式切片传输 (Byte Buffer) ────────►│
+       │            (上报 Progress / Speed 状态机)                 │
+       │                                                           │
+       │ ── 🔴 传输异常发生 ─────────────────────────────────────  │
+       │                                                           │
+       │                                        [触发异常捕获] ────┤
+       │                                                           │
+       │                                        8. 执行脏数据清理 ─┤
+       │                                           └─► 移除未完工文件
+       │                                                           │
+       └─► 9. 主动断开连接 (disconnectSuspend) ◄───────────────────┘
+        </pre>
+    </div>
+
+    <h1>三、基于状态机与协程的底层通道 management</h1>
+    <p>为了将完全异步的 <code>WifiP2pManager</code> 体系线性化，我们使用 <code>suspendCancellableCoroutine</code> 挂起函数对底层回调进行高阶封装。</p>
+
+    <h2>3.1 全局连接状态抽象模型封装</h2>
+    <pre><code>import android.net.wifi.p2p.WifiP2pDevice
+import android.net.wifi.p2p.WifiP2pInfo
+
+sealed class P2pConnectionState {
+    object Idle : P2pConnectionState()
+    object Discovering : P2pConnectionState()
+    data class PeersAvailable(val devices: List&lt;WifiP2pDevice&gt;) : P2pConnectionState()
+    data class Connecting(val target: WifiP2pDevice) : P2pConnectionState()
+    data class Connected(val info: WifiP2pInfo) : P2pConnectionState()
+    data class Disconnected(val reason: String? = null) : P2pConnectionState()
+}</code></pre>
+
+    <h2>3.2 底层回调的线性挂起转换层（核心实现）</h2>
+    <pre><code>import android.annotation.SuppressLint
+import android.net.wifi.p2p.WifiP2pConfig
+import android.net.wifi.p2p.WifiP2pManager
+import android.net.wifi.p2p.WifiP2pManager.ActionListener
+import java.lang.RuntimeException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlinx.coroutines.suspendCancellableCoroutine
+
+class CoroutineP2pManager(
+    private val manager: WifiP2pManager,
+    private val channel: WifiP2pManager.Channel
+) {
+
+    @SuppressLint("MissingPermission")
+    suspend fun discoverPeersSuspend(): Boolean = suspendCancellableCoroutine { continuation -&gt;
+        manager.discoverPeers(channel, object : ActionListener {
+            override fun onSuccess() {
+                // 仅代表启动扫描动作成功，不代表已经扫描到数据
+                if (continuation.isActive) continuation.resume(true)
+            }
+
+            override fun onFailure(reason: Int) {
+                if (continuation.isActive) {
+                    continuation.resumeWithException(RuntimeException("启动设备发现失败，错误码: $reason"))
+                }
+            }
+        })
+    }
+
+    @SuppressLint("MissingPermission")
+    suspend fun connectSuspend(config: WifiP2pConfig): Boolean = suspendCancellableCoroutine { continuation -&gt;
+        manager.connect(channel, config, object : ActionListener {
+            override fun onSuccess() {
+                if (continuation.isActive) continuation.resume(true)
+            }
+
+            override fun onFailure(reason: Int) {
+                if (continuation.isActive) {
+                    continuation.resumeWithException(RuntimeException("建立 P2P 物理连接失败，错误码: $reason"))
+                }
+            }
+        })
+    }
+
+    suspend fun stopPeerDiscoverySuspend(): Boolean = suspendCancellableCoroutine { continuation -&gt;
+        manager.stopPeerDiscovery(channel, object : ActionListener {
+            override fun onSuccess() {
+                if (continuation.isActive) continuation.resume(true)
+            }
+
+            override fun onFailure(reason: Int) {
+                if (continuation.isActive) {
+                    continuation.resume(false)
+                }
+            }
+        })
+    }
+
+    suspend fun disconnectSuspend(): Boolean = suspendCancellableCoroutine { continuation -&gt;
+        manager.removeGroup(channel, object : ActionListener {
+            override fun onSuccess() {
+                if (continuation.isActive) continuation.resume(true)
+            }
+
+            override fun onFailure(reason: Int) {
+                if (continuation.isActive) {
+                    // 部分场景没有群组时会返回错误码 2（BUSY），此时判定为已经处于断开状态
+                    if (reason == WifiP2pManager.BUSY) {
+                        continuation.resume(true)
+                    } else {
+                        continuation.resumeWithException(RuntimeException("移除 P2P 群组失败，错误码: $reason"))
+                    }
+                }
+            }
+        })
+    }
+}</code></pre>
+
+    <h2>3.3 状态监听器与重连补偿机制设计</h2>
+    <p>通过组合 <code>BroadcastReceiver</code> 并将底层事件派发至上层 <code>MutableStateFlow</code>，可实现全自动状态变化监听。针对移动端经常发生的因距离过远、瞬时干扰导致的物理链路意外断连，框架设计了带有最大尝试次数的重连补偿算法：</p>
+
+    <pre><code>import android.content.BroadcastReceiver
+import android.content.Intent
+import android.net.NetworkInfo
+import android.net.wifi.p2p.WifiP2pManager.PeerListListener
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+
+class WifiP2pStateMediator(
+    private val p2pManager: CoroutineP2pManager,
+    private val nativeManager: WifiP2pManager,
+    private val channel: WifiP2pManager.Channel,
+    private val scope: CoroutineScope
+) {
+    private val _connectionState = MutableStateFlow&lt;P2pConnectionState&gt;(P2pConnectionState.Idle)
+    val connectionState = _connectionState.asStateFlow()
+
+    private var lastConfig: WifiP2pConfig? = null
+    private var reconnectCount = 0
+    private const val MAX_RECONNECT_ATTEMPTS = 3
+
+    fun createReceiver(): BroadcastReceiver = object : BroadcastReceiver() {
+        @SuppressLint("MissingPermission")
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION -&gt; {
+                    nativeManager.requestPeers(channel) { peerList -&gt;
+                        _connectionState.value = P2pConnectionState.PeersAvailable(peerList.deviceList.toList())
+                    }
+                }
+                WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION -&gt; {
+                    val networkInfo = intent.getParcelableExtra&lt;NetworkInfo&gt;(WifiP2pManager.EXTRA_NETWORK_INFO)
+                    val wifiP2pInfo = intent.getParcelableExtra&lt;WifiP2pInfo&gt;(WifiP2pManager.EXTRA_WIFI_P2P_INFO)
+                    
+                    if (networkInfo?.isConnected == true && wifiP2pInfo != null) {
+                        reconnectCount = 0 // 成功连接，重置计数器
+                        _connectionState.value = P2pConnectionState.Connected(wifiP2pInfo)
+                    } else {
+                        val previous = _connectionState.value
+                        _connectionState.value = P2pConnectionState.Disconnected("物理链路已断开")
+                        if (previous is P2pConnectionState.Connected) {
+                            handleAutoReconnect()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun setConnectConfig(config: WifiP2pConfig) {
+        this.lastConfig = config
+    }
+
+    private fun handleAutoReconnect() {
+        val config = lastConfig ?: return
+        if (reconnectCount &lt; MAX_RECONNECT_ATTEMPTS) {
+            scope.launch {
+                reconnectCount++
+                delay(3000L * reconnectCount) // 阶梯式延迟：3s, 6s, 9s
+                try {
+                    _connectionState.value = P2pConnectionState.Connecting(WifiP2pDevice().apply { deviceAddress = config.deviceAddress })
+                    p2pManager.connectSuspend(config)
+                } catch (e: Exception) {
+                    _connectionState.value = P2pConnectionState.Disconnected("自动重连第 ${reconnectCount} 次失败: ${e.message}")
+                }
+            }
+        }
+    }
+}</code></pre>
+
+    <h1>四、高性能跨设备文件与文件夹流传输协议</h1>
+    <p>为了全面支持包含 <b>多级文件夹结构</b>、<b>大文件内容</b> 的高性能互传，我们摒弃传统的单文件低效传输模式，制定了一套高度精简、紧凑的高性能流式二进制传输协议。传输分为两个阶段：<b>元数据阶（Metadata Block）</b> 与 <b>原始二进制流数据阶（Payload Storage）</b>。</p>
+
+    <h2>4.1 二进制传输协议帧设计</h2>
+    <p>每次传输开始时，发送端先向 TCP 通道下发一个固定长度或前置声明大小的 UTF-8 JSON 报文头（元数据），随后不间断直连下发文件体。结构体设计如下：</p>
+    <pre><code>/**
+ * 文件/文件夹传输统一元数据协议头
+ */
+data class TransferMetadata(
+    val isFolder: Boolean,               // 是否是文件夹
+    val relativePath: String,           // 相对根目录的路径 (例如: "Docs/Report.pdf" 或 "Images/")
+    val totalFileSize: Long,            // 当前文件块的准确字节数 (文件夹则为 0)
+    val fileIdentifier: String          // 由文件绝对路径加修改时间生成的 MD5 唯一戳，用于脏数据清理机制
+)</code></pre>
+
+    <h2>4.2 实时流速与进度反馈模型</h2>
+    <pre><code>data class TransferProgress(
+    val fileIdentifier: String,
+    val relativePath: String,
+    val bytesTransferred: Long,
+    val totalBytes: Long,
+    val progress: Float,                // 范围 0.0f ~ 100.0f
+    val speedMbps: Double               // 实时传输速率 (Mbps)
+)</code></pre>
+
+    <h2>4.3 核心发送端（Sender）协程化实现</h2>
+    <pre><code>import com.google.gson.Gson
+import java.io.File
+import java.io.FileInputStream
+import java.io.OutputStream
+import java.net.Socket
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlin.math.roundToInt
+
+class P2pDataSender(private val targetIp: String, private val port: Int = 8899) {
+    private val gson = Gson()
+
+    /**
+     * 发送单文件或递归发送文件夹的挂起函数
+     * 通过 Flow 实时冷流向上层发射进度数据
+     */
+    fun sendPayload(inputFiles: List&lt;File&gt;): Flow&lt;TransferProgress&gt; = flow {
+        val allFiles = mutableListOf&lt;Pair&lt;File, String&gt;&gt;()
+        
+        // 1. 预处理：扁平化递归扫描解析出所有的相对路径与绝对物理文件对应关系
+        inputFiles.forEach { file -&gt;
+            if (file.isDirectory) {
+                file.walkTopDown().filter { it.isFile }.forEach { subFile -&gt;
+                    val relative = file.parentFile?.let { subFile.relativeTo(it).path } ?: subFile.name
+                    allFiles.add(subFile to relative.replace("\\", "/"))
+                }
+            } else {
+                allFiles.add(file to file.name)
+            }
+        }
+
+        // 2. 启动 Socket 穿透
+        Socket(targetIp, port).use { socket -&gt;
+            socket.tcpNoDelay = true // 关闭 Nagle 算法，全面榨干带宽降低延迟
+            val outputStream = socket.getOutputStream()
+            val buffer = ByteArray(64 * 1024) // 64KB 高性能高吞吐缓冲区
+
+            allFiles.forEach { (file, relativePath) -&gt;
+                val identifier = "${file.name}_${file.lastModified()}_${file.length()}"
+                val metadata = TransferMetadata(
+                    isFolder = false,
+                    relativePath = relativePath,
+                    totalFileSize = file.length(),
+                    fileIdentifier = identifier
+                )
+
+                // A. 序列化并写出元数据头
+                val metaJson = gson.toJson(metadata)
+                val metaBytes = metaJson.toByteArray(Charsets.UTF_8)
+                
+                // 写入 4 字节的 Header 长度，解决粘包分包断包问题
+                val lenBuffer = ByteArray(4)
+                lenBuffer[0] = (metaBytes.size shr 24).toByte()
+                lenBuffer[1] = (metaBytes.size shr 16).toByte()
+                lenBuffer[2] = (metaBytes.size shr 8).toByte()
+                lenBuffer[3] = (metaBytes.size).toByte()
+                
+                outputStream.write(lenBuffer)
+                outputStream.write(metaBytes)
+                outputStream.flush()
+
+                // B. 流式循环写出文件 Payload 主体
+                FileInputStream(file).use { fileInput -&gt;
+                    var totalRead: Long = 0
+                    val fileLength = file.length()
+                    var lastUpdateTime = System.currentTimeMillis()
+                    var lastUpdatedBytes: Long = 0
+
+                    var bytesRead = fileInput.read(buffer)
+                    while (bytesRead != -1) {
+                        outputStream.write(buffer, 0, bytesRead)
+                        totalRead += bytesRead
+                        
+                        val currentTime = System.currentTimeMillis()
+                        val timeDelta = currentTime - lastUpdateTime
+                        
+                        // 每 300ms 计算并向外发射一次高精度的速度与进度数据，避免频繁阻塞UI
+                        if (timeDelta &gt;= 300 || totalRead == fileLength) {
+                            val bytesDelta = totalRead - lastUpdatedBytes
+                            // 实时速率数学公式： Speed(Mbps) = (ΔBytes * 8) / (ΔTime(ms) / 1000) / 1,000,000
+                            val speedMbps = if (timeDelta &gt; 0) {
+                                (bytesDelta * 8.0 / (timeDelta / 1000.0)) / (1024.0 * 1024.0)
+                            } else 0.0
+                            
+                            val progressPercent = if (fileLength &gt; 0) {
+                                ((totalRead.toDouble() / fileLength.toDouble()) * 100.0).toFloat()
+                            } else 100.0f
+
+                            emit(TransferProgress(
+                                fileIdentifier = identifier,
+                                relativePath = relativePath,
+                                bytesTransferred = totalRead,
+                                totalBytes = fileLength,
+                                progress = progressPercent,
+                                speedMbps = speedMbps
+                            ))
+                            
+                            lastUpdateTime = currentTime
+                            lastUpdatedBytes = totalRead
+                        }
+                        bytesRead = fileInput.read(buffer)
+                    }
+                }
+                outputStream.flush()
+            }
+        }
+    }.flowOn(Dispatchers.IO)
+}</code></pre>
+
+    <h1>五、严密的接收端崩溃健壮性与脏数据清理机制</h1>
+    <p>在跨设备长连无线传输过程中，随时可能发生物理阻断、电量耗尽导致的应用 OOM 或者是系统主动杀死进程。此时，接收端的磁盘往往残留着大量的写到一半的损坏垃圾文件（脏数据）。框架引入了<b>事务型影子文件（Shadow File）及强力清理机制</b>。</p>
+
+    <h2>5.1 影子文件事务协议设计</h2>
+    <ol>
+        <li>接收端接收到任何文件开始指令后，不在目标路径直接创建真实文件，而是创建扩展名为 <code>.downloading_tmp</code> 的临时影子文件。</li>
+        <li>接收端将当前正在执行的事务信息（包含唯一标识码符 <code>fileIdentifier</code> 和影子文件的全路径）实时持久化在内存的独立 Active 集合或本地 KV 库中。</li>
+        <li>一旦发生任何 <code>IOException</code> 异常，在对外抛出异常中断的同时，<b>必须无条件触发影子文件擦除</b>，精准实现文件系统回滚操作。</li>
+        <li>只有整个数据流完全接收、校验和闭合后，才会原子化地重命名为真实目标文件名，并从活跃事务中剔除。</li>
+    </ol>
+
+    <h2>5.2 核心接收端（Receiver）原子级安全实现</h2>
+    <pre><code>import com.google.gson.Gson
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.net.ServerSocket
+import java.net.Socket
+import java.util.concurrent.ConcurrentHashMap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+class P2pDataReceiver(
+    private val baseStorageDir: File,
+    private val port: Int = 8899
+) {
+    private val gson = Gson()
+    // 线程安全的全局活跃传输事务清单，防意外崩溃留脏
+    private val activeTransactions = ConcurrentHashMap&lt;String, File&gt;()
+
+    suspend fun startServerListening(onSuccess: (String) -&gt; Unit) = withContext(Dispatchers.IO) {
+        var serverSocket: ServerSocket? = null
+        try {
+            serverSocket = ServerSocket(port)
+            while (true) {
+                val clientSocket = serverSocket.accept()
+                processClientConnection(clientSocket, onSuccess)
+            }
+        } finally {
+            serverSocket?.close()
+        }
+    }
+
+    private fun processClientConnection(socket: Socket, onSuccess: (String) -&gt; Unit) {
+        socket.use { client -&gt;
+            val inputStream = client.getInputStream()
+            val lenBuffer = ByteArray(4)
+            val buffer = ByteArray(64 * 1024)
+
+            while (true) {
+                // 1. 读取4字节头长度
+                val readLenHead = readFully(inputStream, lenBuffer)
+                if (readLenHead == -1) break // 远端全部发送完成，流正常终止
+
+                val metaLength = ((lenBuffer[0].toInt() and 0xFF) shl 24) or
+                                 ((lenBuffer[1].toInt() and 0xFF) shl 16) or
+                                 ((lenBuffer[2].toInt() and 0xFF) shl 8) or
+                                 (lenBuffer[3].toInt() and 0xFF)
+
+                val metaBuffer = ByteArray(metaLength)
+                readFully(inputStream, metaBuffer)
+                
+                val metadataJson = String(metaBuffer, Charsets.UTF_8)
+                val metadata = gson.fromJson(metadataJson, TransferMetadata::class.java)
+
+                // 2. 计算安全的目标存储路径与影子临时文件路径
+                val targetFile = File(baseStorageDir, metadata.relativePath)
+                targetFile.parentFile?.mkdirs() // 自动补全可能缺失的多级目录结构
+
+                val shadowFile = File(targetFile.absolutePath + ".downloading_tmp")
+                
+                // 3. 将当前事务注册进内存防灾黑板
+                activeTransactions[metadata.fileIdentifier] = shadowFile
+
+                try {
+                    // 4. 流式持久化落地影子文件
+                    FileOutputStream(shadowFile).use { fos -&gt;
+                        var remaining = metadata.totalFileSize
+                        while (remaining &gt; 0) {
+                            val readChunk = inputStream.read(buffer, 0, Math.min(buffer.size.toLong(), remaining).toInt())
+                            if (readChunk == -1) {
+                                throw java.io.IOException("Payload 传输意外中断，预设数据不齐！")
+                            }
+                            fos.write(buffer, 0, readChunk)
+                            remaining -= readChunk
+                        }
+                        fos.flush()
+                    }
+
+                    // 5. 校验闭合，原子转移重命名
+                    if (shadowFile.exists() && shadowFile.length() == metadata.totalFileSize) {
+                        if (targetFile.exists()) targetFile.delete() // 覆盖旧同名文件
+                        if (shadowFile.renameTo(targetFile)) {
+                            // 移除事务追踪
+                            activeTransactions.remove(metadata.fileIdentifier)
+                            onSuccess(targetFile.absolutePath)
+                        } else {
+                            throw java.io.IOException("重命名影子文件失败：${targetFile.name}")
+                        }
+                    } else {
+                        throw java.io.IOException("落盘数据长度不匹配，文件校验损坏。")
+                    }
+
+                } catch (e: Exception) {
+                    // 🔴 触发脏数据强清理机制：对异常中断事务进行全自动垃圾无情擦除
+                    performDirtyCleanup(metadata.fileIdentifier)
+                    throw e // 将异常向上抛出以触发外部重连状态机
+                }
+            }
+        }
+    }
+
+    /**
+     * 单个活跃事务脏数据强制清理机制
+     */
+    fun performDirtyCleanup(fileIdentifier: String) {
+        val brokenFile = activeTransactions.remove(fileIdentifier)
+        if (brokenFile != null && brokenFile.exists()) {
+            try {
+                brokenFile.delete()
+            } catch (ignored: Exception) {
+                // 防止清理本身二次抛出干扰核心链路
+            }
+        }
+    }
+
+    /**
+     * 全局兜底清理函数：供应用冷启动或 P2P 断连重置时强力洗盘，清除所有残留 .downloading_tmp 文件
+     */
+    fun performGlobalSanitize() {
+        activeTransactions.clear()
+        baseStorageDir.walkTopDown().filter { it.name.endsWith(".downloading_tmp") }.forEach { tmpFile -&gt;
+            try { tmpFile.delete() } catch (ignored: Exception) {}
+        }
+    }
+
+    private fun readFully(inputStream: InputStream, targetBuffer: ByteArray): Int {
+        var totalRead = 0
+        while (totalRead &lt; targetBuffer.size) {
+            val bytesRead = inputStream.read(targetBuffer, totalRead, targetBuffer.size - totalRead)
+            if (bytesRead == -1) {
+                if (totalRead == 0) return -1
+                else throw java.io.IOException("流在预定读取长度前意外干涸。")
+            }
+            totalRead += bytesRead
+        }
+        return totalRead
+    }
+}</code></pre>
+
+    <h1>六、工程化：解耦编译出 AAR 模块组件</h1>
+    <p>为了使整个 Wi-Fi P2P 线性协程传输套件能够被其他项目组件独立开箱即用，必须将其抽离为独立的 Android Library 模块并输出 AAR 归档依赖包包。</p>
+
+    <h2>6.1 子模块配置清单：<code>build.gradle.kts</code></h2>
+    <pre><code>plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
+}
+
+android {
+    namespace = "com.leavesczy.wifip2p.core"
+    compileSdk = 34
+
+    defaultConfig {
+        minSdk = 21
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro") // 消费者混淆规约保护
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false // 库内部不强制开启混淆，交由宿主App最终控制
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+        freeCompilerArgs += listOf("-Xjvm-default=all") // 确保高阶兼容
+    }
+}
+
+dependencies {
+    // 仅依赖最基础的 Kotlin 核心库与协程库，确保库的高度轻量与纯净
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("com.google.code.gson:gson:2.10.1")
+}</code></pre>
+
+    <h2>6.2 自动化 AAR 编译与打包流水指令</h2>
+    <p>在 Android Studio 底部的 Terminal 终端或 CI/CD 服务器上，定位到工程的根目录，键入以下专有 Gradle 包装器命令进行无痛工业化构建：</p>
+    
+    <pre><code class="bash"># 清理并针对单模块执行构建 release 版本的组件发布任务
+./gradlew :wifip2p-core:clean :wifip2p-core:assembleRelease</code></pre>
+    
+    <p>构建成功后，输出的极简标准 <code>.aar</code> 归档依赖文件将存放于以下标准文件树目录树中：</p>
+    <pre><code>[您的工程根目录]/wifip2p-core/build/outputs/aar/wifip2p-core-release.aar</code></pre>
+
+    <h2>6.3 AAR 混淆与规约控制：<code>consumer-rules.pro</code></h2>
+    <p>为了杜绝第三方集成后使用 R8/Proguard 进行激进的代码压缩与重命名导致二进制 Socket 解析元数据失败，必须在 AAR 内部固化混淆豁免规则：</p>
+    <pre><code># 保证核心跨端通信的元数据实体类不被混淆
+-keep class com.leavesczy.wifip2p.core.TransferMetadata { *; }
+-keep class com.leavesczy.wifip2p.core.TransferProgress { *; }
+
+# 豁免协程底层状态模型
+-keep class com.leavesczy.wifip2p.core.P2pConnectionState { *; }</code></pre>
+
+    <h1>七、深度技术参考与规范链接</h1>
+    <ul>
+        <li><b>开源参照主仓：</b> <a href="https://github.com/leavesCZY/WifiP2P.git" target="_blank">leavesCZY/WifiP2P - GitHub 官方代码库</a></li>
+        <li><b>Android 官方开发者指南：</b> <a href="https://developer.android.com/guide/topics/connectivity/wifip2p" target="_blank">Android Wi-Fi P2P (Wi-Fi Direct) API 官方技术导则</a></li>
+        <li><b>Kotlin 协程标准：</b> <a href="https://kotlinlang.org/docs/cancellable-contributions.html" target="_blank">Kotlin Coroutines 异步转同步底层原理设计规范</a></li>
+    </ul>
+
+</body>
+</html>

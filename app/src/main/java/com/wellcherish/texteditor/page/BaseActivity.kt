@@ -1,6 +1,8 @@
 package com.wellcherish.texteditor.page
 
+import android.os.Bundle
 import android.view.View
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.wellcherish.texteditor.ui.MainToolbar
 import com.wellcherish.texteditor.ui.ToolbarManager
@@ -8,6 +10,11 @@ import com.wellcherish.texteditor.utils.PageUtils
 
 open class BaseActivity : AppCompatActivity() {
     protected var toolbarManager: ToolbarManager? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onDestroy() {
         super.onDestroy()
