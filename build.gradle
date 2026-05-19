@@ -8,3 +8,46 @@ plugins {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+// 核心：使用 ext 定义全局扩展属性
+ext {
+    // Android SDK 基础配置
+    compileSdkVersion = 35
+    minSdkVersion     = 29
+    targetSdkVersion  = 35
+
+    // 统一管理第三方依赖库的版本号
+    versions = [
+            coreKtx         : "1.7.0",
+            appcompat       : "1.3.0",
+            material        : "1.4.0",
+            constraintlayout: "2.0.4",
+            lifecycle       : "2.4.0",
+            stdlib          : "1.5.30",
+            coroutines      : "1.5.2",
+            activity        : "1.4.0",
+            fragment        : "1.4.1",
+            legacySupport   : "1.0.0",
+            room            : "2.3.0",
+    ]
+
+    // 进阶高级技巧：也可以在这里直接拼接完整的依赖字符串（供子模块一键引用）
+    deps = [
+            coreKtx               : "androidx.core:core-ktx:${versions.coreKtx}",
+            appcompat             : "androidx.appcompat:appcompat:${versions.appcompat}",
+            material              : "com.google.android.material:material:${versions.material}",
+            constraintlayout      : "androidx.constraintlayout:constraintlayout:${versions.constraintlayout}",
+            lifecycleRuntimeKtx   : "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}",
+            stdlib                : "org.jetbrains.kotlin:kotlin-stdlib:${versions.stdlib}",
+            coroutinesCore        : "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}",
+            coroutinesCoreJvm     : "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${versions.coroutines}",
+            coroutinesAndroid     : "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}",
+            activity              : "androidx.activity:activity:${versions.activity}",
+            fragment              : "androidx.fragment:fragment:${versions.fragment}",
+            fragmentKtx           : "androidx.fragment:fragment-ktx:${versions.fragment}",
+            legacySupport         : "androidx.legacy:legacy-support-v4:${versions.legacySupport}",
+            roomRuntime           : "androidx.room:room-runtime:${versions.room}",
+            roomKtx               : "androidx.room:room-ktx:${versions.room}",
+            roomCompiler          : "androidx.room:room-compiler:${versions.room}",
+    ]
+}
