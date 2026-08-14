@@ -14,7 +14,9 @@
         对于以较低版本的 Android 为目标平台的应用，这些方法需要 ACCESS_FINE_LOCATION 权限。
         由于这些权限属于危险权限，因此必须在运行时请求这些权限，然后才能调用 discoverPeers() 或 connect()。
     -->
-    <!--<uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" />-->
+    <uses-permission
+        android:name="android.permission.NEARBY_WIFI_DEVICES"
+        android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 </manifest>

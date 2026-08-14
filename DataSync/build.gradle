@@ -38,4 +38,6 @@ dependencies {
     implementation rootProject.ext.deps.appcompat
     implementation rootProject.ext.deps.material
     implementation rootProject.ext.deps.lifecycleRuntimeKtx
+    implementation rootProject.ext.deps.coroutinesCore
+    implementation rootProject.ext.deps.coroutinesAndroid
 }
